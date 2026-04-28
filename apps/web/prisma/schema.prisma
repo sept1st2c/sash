@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// ProjectOwner — the developer who signs up to
+// the Sash dashboard to manage their projects.
+// Completely separate from end-users (User model).
+// ─────────────────────────────────────────────
+model ProjectOwner {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  projects     Project[]
+
+  @@map("project_owners")
+}
+
+// ─────────────────────────────────────────────
+// Project — one application registered in Sash.
+// Every end-user and API request is scoped to a
+// project via the apiKey or projectId.
+// ─────────────────────────────────────────────
+model Project {
+  id         String   @id @default(cuid())
+  name       String
+  apiKey     String   @unique  // sash_live_<random>
+  webhookUrl String?           // optional — where we POST events
+  ownerId    String
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  owner      ProjectOwner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  users      User[]
+
+  @@index([apiKey])
+  @@map("projects")
+}
+
+// ─────────────────────────────────────────────
+// User — an end-user of a developer's application.
+// Scoped to a Project — two projects can have users
+// with the same email, they are fully isolated.
+// ─────────────────────────────────────────────
+model User {
+  id           String   @id @default(cuid())
+  email        String
+  passwordHash String
+  projectId    String
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Unique per project — same email can exist across different projects
+  @@unique([email, projectId])
+  @@index([projectId])
+  @@map("users")
+}
