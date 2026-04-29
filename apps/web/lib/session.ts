@@ -121,7 +121,9 @@ export async function invalidateAllUserSessions(userId: string): Promise<void> {
       count: 100,
     });
 
-    cursor = nextCursor as unknown as number;
+    // Upstash returns nextCursor as a string (e.g. "0").
+    // We MUST cast it to a Number so the while (cursor !== 0) condition works!
+    cursor = Number(nextCursor);
 
     if (keys.length === 0) continue;
 
