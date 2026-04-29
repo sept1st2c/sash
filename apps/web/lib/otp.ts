@@ -92,10 +92,12 @@ export async function verifyOtp(
   const key = otpKey(type, projectId, email);
   const attKey = attemptKey(type, projectId, email);
 
-  const stored = await redis.get<string>(key);
+  const stored = await redis.get<string | number>(key);
   if (!stored) return "expired";
 
-  if (stored === code) {
+  // Upstash auto-parses numeric strings into Numbers.
+  // "123456" becomes 123456. So we must cast it back to String.
+  if (String(stored) === code.trim()) {
     // Correct — delete both keys (single-use)
     await Promise.all([redis.del(key), redis.del(attKey)]);
     return "ok";
