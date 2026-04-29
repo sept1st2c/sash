@@ -1,10 +1,3 @@
-/**
- * app/dashboard/layout.tsx
- *
- * Shared layout for all /dashboard/* pages.
- * Renders the sidebar + main content area.
- * Server component — reads auth session to show owner email.
- */
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import DashboardSidebar from "./DashboardSidebar";
@@ -23,9 +16,13 @@ export default async function DashboardLayout({
   if (!session?.user) redirect("/login");
 
   return (
-    <div className="dashboard-layout">
+    <div className="flex min-h-screen bg-[color:var(--color-bg-base)]">
       <DashboardSidebar email={session.user.email ?? ""} />
-      <main className="main-content">{children}</main>
+      <main className="flex-1 overflow-y-auto px-8 md:px-12 py-10">
+        <div className="max-w-[1200px] mx-auto">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }

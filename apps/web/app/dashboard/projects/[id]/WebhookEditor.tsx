@@ -1,13 +1,3 @@
-/**
- * app/dashboard/projects/[id]/WebhookEditor.tsx
- *
- * Client component — inline editor for the project's webhook URL.
- * PATCHes to /api/dashboard/projects/[id] on save.
- *
- * PROPS:
- *   projectId  — the project's ID
- *   currentUrl — current value of webhookUrl (empty string if none)
- */
 "use client";
 import { useState } from "react";
 import { Check, Pencil, X, ExternalLink } from "lucide-react";
@@ -64,11 +54,9 @@ export default function WebhookEditor({ projectId, currentUrl }: Props) {
   return (
     <div>
       {!editing ? (
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div className="flex items-center gap-2.5">
           <div
-            id={`webhook-display-${projectId}`}
-            className="mono"
-            style={{ flex: 1, color: url ? "var(--brand-light)" : "var(--text-muted)" }}
+            className={`flex-1 font-mono text-[13px] bg-[color:var(--color-bg-subtle)] px-3.5 py-2.5 rounded-xl border border-[color:var(--color-border-subtle)] overflow-hidden text-ellipsis whitespace-nowrap ${url ? 'text-[color:var(--color-brand-light)]' : 'text-[color:var(--color-text-muted)]'}`}
           >
             {url || "No webhook URL configured"}
           </div>
@@ -77,62 +65,55 @@ export default function WebhookEditor({ projectId, currentUrl }: Props) {
               href={url}
               target="_blank"
               rel="noopener noreferrer"
-              id={`webhook-link-${projectId}`}
-              className="btn btn-ghost btn-sm"
               title="Open URL"
+              className="shrink-0 p-2.5 rounded-xl border border-[color:var(--color-border-subtle)] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-bg-subtle)] hover:text-[color:var(--color-text-primary)] transition-colors"
             >
-              <ExternalLink size={14} />
+              <ExternalLink size={16} />
             </a>
           )}
           <button
-            id={`webhook-edit-${projectId}`}
-            className="btn btn-ghost btn-sm"
             onClick={() => { setEditing(true); setDraft(url); }}
+            className="shrink-0 flex items-center gap-2 px-3 py-2.5 rounded-xl border border-[color:var(--color-border-subtle)] text-[13px] font-medium text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-bg-subtle)] hover:text-[color:var(--color-text-primary)] transition-colors"
           >
             <Pencil size={14} /> Edit
           </button>
           {success && (
-            <span style={{ fontSize: 13, color: "var(--success)", display: "flex", alignItems: "center", gap: 4 }}>
+            <span className="text-[13px] text-emerald-500 flex items-center gap-1.5 ml-1">
               <Check size={14} /> Saved
             </span>
           )}
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <div style={{ display: "flex", gap: 10 }}>
+        <div className="flex flex-col gap-2.5">
+          <div className="flex items-center gap-2.5">
             <input
-              id={`webhook-input-${projectId}`}
               type="url"
-              className="form-input"
+              className="flex-1 px-3.5 py-2.5 bg-[color:var(--color-bg-subtle)] border border-[color:var(--color-border-subtle)] rounded-xl text-[14px] text-[color:var(--color-text-primary)] transition-all focus:outline-none focus:border-[color:var(--color-brand)] focus:ring-4 focus:ring-brand/20 placeholder:text-[color:var(--color-text-muted)]"
               placeholder="https://yourapp.com/api/webhooks/sash"
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               autoFocus
             />
             <button
-              id={`webhook-save-${projectId}`}
-              className="btn btn-primary btn-sm"
               onClick={handleSave}
               disabled={loading}
-              style={{ flexShrink: 0 }}
+              className="shrink-0 flex items-center gap-2 px-4 py-2.5 bg-[color:var(--color-brand)] text-white rounded-xl text-[14px] font-medium hover:bg-[color:var(--color-brand-light)] transition-colors disabled:opacity-50"
             >
               <Check size={14} /> {loading ? "Saving…" : "Save"}
             </button>
             <button
-              id={`webhook-cancel-${projectId}`}
-              className="btn btn-ghost btn-sm"
               onClick={handleCancel}
               disabled={loading}
-              style={{ flexShrink: 0 }}
+              className="shrink-0 p-2.5 rounded-xl border border-[color:var(--color-border-subtle)] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-bg-subtle)] hover:text-[color:var(--color-text-primary)] transition-colors disabled:opacity-50"
             >
-              <X size={14} />
+              <X size={16} />
             </button>
           </div>
           {error && (
-            <p style={{ fontSize: 13, color: "var(--danger)" }}>{error}</p>
+            <p className="text-[13px] text-red-500">{error}</p>
           )}
-          <p style={{ fontSize: 12, color: "var(--text-muted)" }}>
-            Sash will send <code style={{ fontSize: 11 }}>X-Sash-Signature</code> HMAC headers with each request.
+          <p className="text-[12px] text-[color:var(--color-text-muted)]">
+            Sash will send <code className="font-mono text-[11px] bg-[color:var(--color-bg-subtle)] px-1 py-0.5 rounded">X-Sash-Signature</code> HMAC headers with each request.
             Leave empty to disable.
           </p>
         </div>

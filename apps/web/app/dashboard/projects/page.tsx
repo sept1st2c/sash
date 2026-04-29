@@ -1,11 +1,3 @@
-/**
- * app/dashboard/projects/page.tsx
- *
- * Projects list page — shows all projects with API keys and user counts.
- * "Create Project" modal is handled client-side so the page can be a Server Component.
- *
- * Server component — fetches projects for the logged-in owner directly from DB.
- */
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
@@ -34,87 +26,66 @@ export default async function ProjectsPage() {
 
   return (
     <>
-      <div className="page-header">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="page-title">Projects</h1>
-          <p className="page-subtitle">{projects.length} application{projects.length !== 1 ? "s" : ""} registered</p>
+          <h1 className="text-[22px] font-bold tracking-tight text-[color:var(--color-text-primary)]">Projects</h1>
+          <p className="text-[14px] text-[color:var(--color-text-secondary)] mt-1">{projects.length} application{projects.length !== 1 ? "s" : ""} registered</p>
         </div>
         {/* Client component handles the modal */}
         <CreateProjectButton />
       </div>
 
       {projects.length === 0 ? (
-        <div className="card" style={{ padding: 64, textAlign: "center" }}>
-          <div style={{ fontSize: 40, marginBottom: 16 }}>📦</div>
-          <p style={{ color: "var(--text-secondary)", fontSize: 15, marginBottom: 8 }}>
+        <div className="bg-[color:var(--color-bg-surface)] border border-[color:var(--color-border-subtle)] rounded-[16px] p-16 text-center shadow-sm">
+          <div className="text-[40px] mb-4">📦</div>
+          <p className="text-[15px] text-[color:var(--color-text-secondary)] mb-2 font-medium">
             No projects yet
           </p>
-          <p style={{ color: "var(--text-muted)", fontSize: 13, marginBottom: 24 }}>
+          <p className="text-[13px] text-[color:var(--color-text-muted)] mb-6">
             Create a project to get an API key and start integrating Sash.
           </p>
           <CreateProjectButton />
         </div>
       ) : (
-        <div className="projects-grid">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {projects.map((project) => (
             <Link
               key={project.id}
               href={`/dashboard/projects/${project.id}`}
-              id={`project-card-${project.id}`}
-              style={{ textDecoration: "none" }}
+              className="group block h-full"
             >
-              <div className="card" style={{ padding: 24, height: "100%", cursor: "pointer", display: "flex", flexDirection: "column", gap: 16 }}>
+              <div className="h-full bg-[color:var(--color-bg-surface)] border border-[color:var(--color-border-subtle)] rounded-[16px] p-6 flex flex-col gap-4 group-hover:border-[color:var(--color-border-bright)] transition-colors shadow-sm">
                 {/* Header */}
-                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 10,
-                      background: "var(--brand-dim)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 16,
-                      fontWeight: 700,
-                      color: "var(--brand-light)",
-                    }}>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-[40px] h-[40px] rounded-xl bg-[color:var(--color-brand-dim)] flex items-center justify-center text-[16px] font-bold text-[color:var(--color-brand-light)] shrink-0">
                       {project.name[0].toUpperCase()}
                     </div>
                     <div>
-                      <div style={{ fontWeight: 600, color: "var(--text-primary)", fontSize: 15 }}>{project.name}</div>
-                      <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>
+                      <div className="font-semibold text-[color:var(--color-text-primary)] text-[15px]">{project.name}</div>
+                      <div className="text-[12px] text-[color:var(--color-text-muted)] mt-0.5">
                         {new Date(project.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                       </div>
                     </div>
                   </div>
-                  <ArrowRight size={16} color="var(--text-muted)" />
+                  <ArrowRight size={16} className="text-[color:var(--color-text-muted)] group-hover:text-[color:var(--color-text-primary)] transition-colors" />
                 </div>
 
                 {/* API Key preview */}
-                <div style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 11,
-                  color: "var(--text-muted)",
-                  background: "var(--bg-subtle)",
-                  padding: "6px 10px",
-                  borderRadius: 6,
-                  border: "1px solid var(--border)",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}>
+                <div className="font-mono text-[11px] text-[color:var(--color-text-muted)] bg-[color:var(--color-bg-subtle)] px-2.5 py-1.5 rounded-lg border border-[color:var(--color-border-subtle)] overflow-hidden text-ellipsis whitespace-nowrap">
                   {project.apiKey.slice(0, 24)}…
                 </div>
 
                 {/* Footer */}
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: "auto" }}>
-                  <Users size={13} color="var(--text-muted)" />
-                  <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                <div className="flex items-center gap-1.5 mt-auto pt-2">
+                  <Users size={13} className="text-[color:var(--color-text-muted)]" />
+                  <span className="text-[12px] text-[color:var(--color-text-muted)]">
                     {project._count.users} user{project._count.users !== 1 ? "s" : ""}
                   </span>
                   {project.webhookUrl && (
-                    <span className="badge badge-success" style={{ marginLeft: "auto" }}>Webhook ✓</span>
+                    <span className="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-500">
+                      Webhook ✓
+                    </span>
                   )}
                 </div>
               </div>

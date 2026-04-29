@@ -1,12 +1,3 @@
-/**
- * app/dashboard/projects/CreateProjectButton.tsx
- *
- * Client component — "New Project" button that opens a modal form.
- * On submit, POSTs to /api/dashboard/projects and refreshes the page.
- *
- * Extracted as a separate client component so the parent (projects/page.tsx)
- * can remain a Server Component and benefit from server-side data fetching.
- */
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -61,38 +52,46 @@ export default function CreateProjectButton() {
   return (
     <>
       <button
-        id="create-project-btn"
-        className="btn btn-primary"
         onClick={() => setOpen(true)}
+        className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[color:var(--color-brand)] text-white rounded-xl text-[14px] font-medium shadow-[0_0_20px_rgba(99,102,241,0.25)] hover:bg-[color:var(--color-brand-light)] hover:-translate-y-[1px] transition-all"
       >
         <Plus size={15} /> New Project
       </button>
 
       {open && (
-        <div className="modal-overlay" onClick={handleClose}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
-              <h2 className="modal-title" style={{ margin: 0 }}>Create Project</h2>
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200"
+          onClick={handleClose}
+        >
+          <div 
+            className="w-full max-w-[440px] bg-[color:var(--color-bg-elevated)] border border-[color:var(--color-border-bright)] rounded-3xl p-8 shadow-2xl animate-in slide-in-from-bottom-4 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-[18px] font-bold text-[color:var(--color-text-primary)] m-0">Create Project</h2>
               <button
-                id="modal-close-btn"
                 onClick={handleClose}
-                style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: 4 }}
+                className="p-1 text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text-primary)] hover:bg-[color:var(--color-bg-subtle)] rounded-lg transition-colors"
               >
                 <X size={18} />
               </button>
             </div>
 
             {error && (
-              <div className="toast toast-error" style={{ marginBottom: 16, animation: "none" }}>{error}</div>
+              <div className="mb-4 p-3 rounded-lg text-sm font-medium bg-red-500/10 border border-red-500/20 text-red-500">
+                {error}
+              </div>
             )}
 
-            <form onSubmit={handleCreate} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <form onSubmit={handleCreate} className="flex flex-col gap-4">
               <div>
-                <label className="form-label" htmlFor="project-name">Project Name</label>
+                <label className="block text-[13px] font-medium text-[color:var(--color-text-secondary)] mb-1.5" htmlFor="project-name">
+                  Project Name
+                </label>
                 <input
                   id="project-name"
                   type="text"
-                  className="form-input"
+                  className="w-full px-3.5 py-2.5 bg-[color:var(--color-bg-subtle)] border border-[color:var(--color-border-subtle)] rounded-xl text-[14px] text-[color:var(--color-text-primary)] transition-all focus:outline-none focus:border-[color:var(--color-brand)] focus:ring-4 focus:ring-brand/20 placeholder:text-[color:var(--color-text-muted)]"
                   placeholder="e.g. My App, Startup Dashboard..."
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -100,16 +99,15 @@ export default function CreateProjectButton() {
                   minLength={2}
                   autoFocus
                 />
-                <p style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 6 }}>
+                <p className="text-[12px] text-[color:var(--color-text-muted)] mt-1.5">
                   A unique API key will be generated automatically.
                 </p>
               </div>
 
-              <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4 }}>
+              <div className="flex justify-end gap-2.5 mt-2">
                 <button
                   type="button"
-                  id="modal-cancel-btn"
-                  className="btn btn-ghost"
+                  className="px-4 py-2 rounded-xl text-[14px] font-medium text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-bg-subtle)] hover:text-[color:var(--color-text-primary)] transition-colors disabled:opacity-50"
                   onClick={handleClose}
                   disabled={loading}
                 >
@@ -117,8 +115,7 @@ export default function CreateProjectButton() {
                 </button>
                 <button
                   type="submit"
-                  id="modal-create-btn"
-                  className="btn btn-primary"
+                  className="px-4 py-2 bg-[color:var(--color-brand)] text-white rounded-xl text-[14px] font-medium hover:bg-[color:var(--color-brand-light)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={loading || name.trim().length < 2}
                 >
                   {loading ? "Creating…" : "Create Project"}

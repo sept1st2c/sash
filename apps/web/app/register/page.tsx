@@ -1,9 +1,3 @@
-/**
- * app/register/page.tsx
- *
- * Developer registration page — creates a ProjectOwner account.
- * After success, redirects to /login.
- */
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -44,26 +38,30 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="auth-page bg-grid">
-      <div className="auth-card">
-        <div className="auth-logo">
-          S<span>ash</span>
+    <div className="min-h-screen flex items-center justify-center p-6 bg-grid bg-[color:var(--color-bg-base)]">
+      <div className="w-full max-w-[400px] bg-[color:var(--color-bg-surface)] border border-[color:var(--color-border-subtle)] rounded-3xl p-10 backdrop-blur-sm shadow-2xl">
+        <div className="text-center text-[26px] font-extrabold tracking-tight mb-2">
+          S<span className="text-[color:var(--color-brand)]">ash</span>
         </div>
-        <p className="auth-tagline">Create your developer account</p>
+        <p className="text-center text-sm text-[color:var(--color-text-secondary)] mb-8">
+          Create your developer account
+        </p>
 
         {error && (
-          <div className="toast toast-error" style={{ marginBottom: 20, animation: "none" }}>
+          <div className="mb-5 p-3 rounded-lg text-sm font-medium bg-red-500/10 border border-red-500/20 text-red-500">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="form-label" htmlFor="reg-email">Email</label>
+            <label className="block text-[13px] font-medium text-[color:var(--color-text-secondary)] mb-1.5" htmlFor="reg-email">
+              Email
+            </label>
             <input
               id="reg-email"
               type="email"
-              className="form-input"
+              className="w-full px-3.5 py-2.5 bg-[color:var(--color-bg-subtle)] border border-[color:var(--color-border-subtle)] rounded-xl text-[14px] text-[color:var(--color-text-primary)] transition-all focus:outline-none focus:border-[color:var(--color-brand)] focus:ring-4 focus:ring-brand/20 placeholder:text-[color:var(--color-text-muted)]"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -73,11 +71,13 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="form-label" htmlFor="reg-password">Password</label>
+            <label className="block text-[13px] font-medium text-[color:var(--color-text-secondary)] mb-1.5" htmlFor="reg-password">
+              Password
+            </label>
             <input
               id="reg-password"
               type="password"
-              className="form-input"
+              className="w-full px-3.5 py-2.5 bg-[color:var(--color-bg-subtle)] border border-[color:var(--color-border-subtle)] rounded-xl text-[14px] text-[color:var(--color-text-primary)] transition-all focus:outline-none focus:border-[color:var(--color-brand)] focus:ring-4 focus:ring-brand/20 placeholder:text-[color:var(--color-text-muted)]"
               placeholder="Min. 8 characters"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -87,21 +87,19 @@ export default function RegisterPage() {
           </div>
 
           <button
-            id="reg-submit"
             type="submit"
-            className="btn btn-primary"
+            className="mt-2 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[color:var(--color-brand)] text-white rounded-xl text-[14px] font-medium shadow-[0_0_20px_rgba(99,102,241,0.25)] hover:bg-[color:var(--color-brand-light)] hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:-translate-y-[1px] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
-            style={{ width: "100%", justifyContent: "center", marginTop: 4 }}
           >
             {loading ? "Creating account…" : "Create Account"}
           </button>
         </form>
 
-        <div className="divider" />
+        <div className="h-px bg-[color:var(--color-border-subtle)] my-6" />
 
-        <p style={{ textAlign: "center", fontSize: 14, color: "var(--text-secondary)" }}>
+        <p className="text-center text-[14px] text-[color:var(--color-text-secondary)]">
           Already have an account?{" "}
-          <Link href="/login" style={{ color: "var(--brand-light)", textDecoration: "none", fontWeight: 500 }}>
+          <Link href="/login" className="text-[color:var(--color-brand-light)] font-medium hover:underline decoration-brand/30 underline-offset-4">
             Sign in
           </Link>
         </p>

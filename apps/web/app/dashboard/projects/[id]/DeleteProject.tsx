@@ -1,14 +1,3 @@
-/**
- * app/dashboard/projects/[id]/DeleteProject.tsx
- *
- * Client component — delete project with a confirmation modal.
- * Requires the user to type the project name before deleting (safety gate).
- * DELETEs to /api/dashboard/projects/[id] and redirects to /dashboard/projects.
- *
- * PROPS:
- *   projectId   — the project to delete
- *   projectName — shown in the modal and used for confirmation input
- */
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -55,41 +44,45 @@ export default function DeleteProject({ projectId, projectName }: Props) {
   return (
     <>
       <button
-        id={`delete-project-btn-${projectId}`}
-        className="btn btn-danger"
         onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-2 px-4 py-2.5 border border-red-500/30 text-red-500 rounded-xl text-[14px] font-medium hover:bg-red-500/10 transition-colors"
       >
         <Trash2 size={15} /> Delete Project
       </button>
 
       {open && (
-        <div className="modal-overlay" onClick={() => !loading && setOpen(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-              <h2 className="modal-title" style={{ margin: 0, color: "var(--danger)" }}>Delete Project</h2>
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200"
+          onClick={() => !loading && setOpen(false)}
+        >
+          <div 
+            className="w-full max-w-[440px] bg-[color:var(--color-bg-elevated)] border border-[color:var(--color-border-bright)] rounded-3xl p-8 shadow-2xl animate-in slide-in-from-bottom-4 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[18px] font-bold text-red-500 m-0">Delete Project</h2>
               <button
-                id="delete-modal-close"
                 onClick={() => setOpen(false)}
-                style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: 4 }}
                 disabled={loading}
+                className="p-1 text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text-primary)] hover:bg-[color:var(--color-bg-subtle)] rounded-lg transition-colors disabled:opacity-50"
               >
                 <X size={18} />
               </button>
             </div>
 
-            <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 20, lineHeight: 1.6 }}>
-              This will permanently delete <strong style={{ color: "var(--text-primary)" }}>{projectName}</strong> and
-              all its users. This action <strong style={{ color: "var(--danger)" }}>cannot be undone</strong>.
+            <p className="text-[14px] text-[color:var(--color-text-secondary)] mb-5 leading-relaxed">
+              This will permanently delete <strong className="text-[color:var(--color-text-primary)] font-semibold">{projectName}</strong> and
+              all its users. This action <strong className="text-red-500 font-semibold">cannot be undone</strong>.
             </p>
 
-            <div style={{ marginBottom: 16 }}>
-              <label className="form-label" htmlFor="delete-confirm-input">
-                Type <strong style={{ color: "var(--text-primary)" }}>{projectName}</strong> to confirm
+            <div className="mb-5">
+              <label className="block text-[13px] font-medium text-[color:var(--color-text-secondary)] mb-1.5" htmlFor="delete-confirm-input">
+                Type <strong className="text-[color:var(--color-text-primary)] font-semibold">{projectName}</strong> to confirm
               </label>
               <input
                 id="delete-confirm-input"
                 type="text"
-                className="form-input"
+                className="w-full px-3.5 py-2.5 bg-[color:var(--color-bg-subtle)] border border-[color:var(--color-border-subtle)] rounded-xl text-[14px] text-[color:var(--color-text-primary)] transition-all focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-500/20 placeholder:text-[color:var(--color-text-muted)]"
                 placeholder={projectName}
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
@@ -98,21 +91,21 @@ export default function DeleteProject({ projectId, projectName }: Props) {
             </div>
 
             {error && (
-              <div className="toast toast-error" style={{ marginBottom: 16, animation: "none" }}>{error}</div>
+              <div className="mb-4 p-3 rounded-lg text-sm font-medium bg-red-500/10 border border-red-500/20 text-red-500">
+                {error}
+              </div>
             )}
 
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+            <div className="flex justify-end gap-2.5 mt-2">
               <button
-                id="delete-modal-cancel"
-                className="btn btn-ghost"
+                className="px-4 py-2 rounded-xl text-[14px] font-medium text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-bg-subtle)] hover:text-[color:var(--color-text-primary)] transition-colors disabled:opacity-50"
                 onClick={() => { setOpen(false); setConfirm(""); }}
                 disabled={loading}
               >
                 Cancel
               </button>
               <button
-                id="delete-modal-confirm"
-                className="btn btn-danger"
+                className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-xl text-[14px] font-medium hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleDelete}
                 disabled={confirm !== projectName || loading}
               >

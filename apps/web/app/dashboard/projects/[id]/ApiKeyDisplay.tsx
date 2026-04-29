@@ -1,14 +1,3 @@
-/**
- * app/dashboard/projects/[id]/ApiKeyDisplay.tsx
- *
- * Client component — displays the API key with show/hide toggle and copy button.
- *
- * WHY CLIENT: Clipboard API and hover/click interactions require the browser.
- *
- * PROPS:
- *   apiKey    — the full API key string
- *   projectId — used for unique element IDs
- */
 "use client";
 import { useState } from "react";
 import { Eye, EyeOff, Copy, Check } from "lucide-react";
@@ -43,36 +32,30 @@ export default function ApiKeyDisplay({ apiKey, projectId }: Props) {
   const displayKey = visible ? apiKey : `${apiKey.slice(0, 12)}${"•".repeat(32)}`;
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+    <div className="flex items-center gap-2.5">
       <div
-        id={`apikey-display-${projectId}`}
-        className="mono"
-        style={{ flex: 1, cursor: "text", letterSpacing: visible ? "0.02em" : "0.08em" }}
+        className={`flex-1 font-mono text-[13px] bg-[color:var(--color-bg-subtle)] px-3.5 py-2.5 rounded-xl border border-[color:var(--color-border-subtle)] text-[color:var(--color-brand-light)] cursor-text overflow-hidden text-ellipsis whitespace-nowrap transition-all ${visible ? 'tracking-normal' : 'tracking-widest'}`}
       >
         {displayKey}
       </div>
 
       <button
-        id={`apikey-toggle-${projectId}`}
-        className="btn btn-ghost btn-sm"
         onClick={() => setVisible((v) => !v)}
         title={visible ? "Hide API key" : "Reveal API key"}
-        style={{ flexShrink: 0 }}
+        className="shrink-0 p-2.5 rounded-xl border border-[color:var(--color-border-subtle)] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-bg-subtle)] hover:text-[color:var(--color-text-primary)] transition-colors"
       >
-        {visible ? <EyeOff size={15} /> : <Eye size={15} />}
+        {visible ? <EyeOff size={16} /> : <Eye size={16} />}
       </button>
 
       <button
-        id={`apikey-copy-${projectId}`}
-        className="btn btn-ghost btn-sm"
         onClick={handleCopy}
         title="Copy API key"
-        style={{ flexShrink: 0, minWidth: 90 }}
+        className="shrink-0 min-w-[90px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-[color:var(--color-border-subtle)] text-[13px] font-medium text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-bg-subtle)] hover:text-[color:var(--color-text-primary)] transition-colors"
       >
         {copied ? (
-          <><Check size={15} color="var(--success)" /> Copied</>
+          <><Check size={14} className="text-emerald-500" /> Copied</>
         ) : (
-          <><Copy size={15} /> Copy</>
+          <><Copy size={14} /> Copy</>
         )}
       </button>
     </div>
