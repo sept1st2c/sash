@@ -54,15 +54,25 @@ model Project {
 // with the same email, they are fully isolated.
 // ─────────────────────────────────────────────
 model User {
-  id           String   @id @default(cuid())
-  email        String
-  passwordHash String
-  projectId    String
+  id            String    @id @default(cuid())
+  email         String
+  passwordHash  String
+  projectId     String
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  // ── Phase 3 additions ──────────────────────────────
+  // emailVerified: set to true when the user clicks the OTP link.
+  //   Login is not blocked by this — devs can decide in their webhook handler.
+  //   We expose it on /me so client apps can gate their own features.
+  emailVerified Boolean   @default(false)
 
-  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  // isActive: soft-delete / suspend flag.
+  //   When false, login returns 403. Devs can flip this via our dashboard later.
+  isActive      Boolean   @default(true)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   // Unique per project — same email can exist across different projects
   @@unique([email, projectId])

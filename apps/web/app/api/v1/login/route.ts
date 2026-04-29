@@ -104,6 +104,11 @@ export async function POST(req: NextRequest) {
     return jsonError(INVALID_CREDENTIALS_MSG, 401);
   }
 
+  // ── Phase 3: Check if account is active ──────────────────────────────────
+  if (!user.isActive) {
+    return jsonError("This account has been suspended.", 403);
+  }
+
   // ── Step 5: Compare password ─────────────────────────────────────────────
   const passwordMatch = await bcrypt.compare(password, user.passwordHash);
 
@@ -118,7 +123,13 @@ export async function POST(req: NextRequest) {
   dispatchWebhook(project, "user.login", { id: user.id, email: user.email });
 
   // ── Step 8: Set cookie and return response ───────────────────────────────
-  const safeUser = { id: user.id, email: user.email, createdAt: user.createdAt };
+  const safeUser = {
+    id: user.id,
+    email: user.email,
+    emailVerified: user.emailVerified,
+    isActive: user.isActive,
+    createdAt: user.createdAt,
+  };
   const response = jsonSuccess({ user: safeUser, sessionId });
   response.cookies.set(SESSION_COOKIE_NAME, sessionId, SESSION_COOKIE_OPTIONS);
 

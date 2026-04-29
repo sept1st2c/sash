@@ -52,13 +52,18 @@ export async function GET(req: NextRequest) {
     select: {
       id: true,
       email: true,
+      emailVerified: true,
+      isActive: true,
       createdAt: true,
     },
   });
 
-  // ── Step 4: Guard — user was deleted after session was created ───────────
+  // ── Step 4: Guard — user was deleted or deactivated after session was created
   if (!user) {
     return jsonError("Unauthorized. User not found.", 401);
+  }
+  if (!user.isActive) {
+    return jsonError("This account has been suspended.", 403);
   }
 
   // ── Step 5: Refresh session TTL (sliding window) ─────────────────────────

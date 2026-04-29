@@ -27,7 +27,13 @@ import type { Project } from "@prisma/client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type WebhookEvent = "user.signup" | "user.login" | "user.logout";
+export type WebhookEvent =
+  | "user.signup"
+  | "user.login"
+  | "user.logout"
+  | "user.email_verified"
+  | "user.password_reset";
+
 
 export interface WebhookUser {
   id: string;

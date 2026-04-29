@@ -97,3 +97,59 @@ export async function deleteSession(sessionId: string): Promise<void> {
 export async function refreshSession(sessionId: string): Promise<void> {
   await redis.expire(sessionKey(sessionId), SESSION_TTL_SECONDS);
 }
+
+/**
+ * invalidateAllUserSessions
+ *
+ * Deletes ALL active sessions for a given userId from Redis.
+ * Called after a password reset to force re-login on all devices.
+ *
+ * STRATEGY: Upstash Redis supports SCAN — we scan all keys matching
+ * "session:*", fetch each one, and delete those whose payload.userId matches.
+ *
+ * NOTE: This is O(n) over all sessions in Redis, but sessions are short-lived
+ * (7 days) and most deployments won't have millions. If this becomes a
+ * bottleneck, migrate to a reverse index: userId → Set<sessionId>.
+ */
+export async function invalidateAllUserSessions(userId: string): Promise<void> {
+  let cursor = 0;
+
+  do {
+    // SCAN returns [nextCursor, keys[]]
+    const [nextCursor, keys] = await redis.scan(cursor, {
+      match: `${SESSION_PREFIX}*`,
+      count: 100,
+    });
+
+    cursor = nextCursor as unknown as number;
+
+    if (keys.length === 0) continue;
+
+    // Fetch all matched session payloads in parallel
+    const values = await Promise.all(
+      keys.map((k) => redis.get<string>(k))
+    );
+
+    const toDelete: string[] = [];
+
+    for (let i = 0; i < keys.length; i++) {
+      const raw = values[i];
+      if (!raw) continue;
+
+      try {
+        const payload: SessionPayload =
+          typeof raw === "string" ? JSON.parse(raw) : (raw as SessionPayload);
+
+        if (payload.userId === userId) {
+          toDelete.push(keys[i]);
+        }
+      } catch {
+        // Malformed payload — skip
+      }
+    }
+
+    if (toDelete.length > 0) {
+      await Promise.all(toDelete.map((k) => redis.del(k)));
+    }
+  } while (cursor !== 0);
+}
