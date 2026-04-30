@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { LayoutDashboard, FolderOpen, LogOut, Zap } from "lucide-react";
+import { LayoutDashboard, FolderOpen, LogOut, Zap, BookOpen } from "lucide-react";
 
 interface Props {
   email: string;
@@ -11,6 +11,7 @@ interface Props {
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/projects", label: "Projects", icon: FolderOpen, exact: false },
+  { href: "/dashboard/docs", label: "Docs", icon: BookOpen, exact: false },
 ];
 
 export default function DashboardSidebar({ email }: Props) {
@@ -72,7 +73,7 @@ export default function DashboardSidebar({ email }: Props) {
       {/* Version tag */}
       <div className="mt-4 px-3 flex items-center gap-1.5">
         <Zap size={12} className="text-[color:var(--color-brand)]" />
-        <span className="text-[11px] text-[color:var(--color-text-muted)]">Sash v0.1 · Phase 2</span>
+        <span className="text-[11px] text-[color:var(--color-text-muted)]">Sash v0.1 · Phase 5</span>
       </div>
     </aside>
   );
