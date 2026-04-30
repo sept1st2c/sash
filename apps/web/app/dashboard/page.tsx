@@ -24,7 +24,7 @@ export default async function DashboardOverviewPage() {
     }),
   ]);
 
-  const totalUsers = projects.reduce((sum, p) => sum + p._count.users, 0);
+  const totalUsers = projects.reduce((sum: number, p: any) => sum + p._count.users, 0);
 
   return (
     <>
