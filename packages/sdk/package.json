@@ -1,5 +1,5 @@
 {
-  "name": "@sash/sdk",
+  "name": "@septic/sdk",
   "version": "0.1.0",
   "description": "React SDK for Sash Auth-as-a-Service",
   "main": "./dist/index.js",
