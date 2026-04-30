@@ -75,11 +75,20 @@ export class SashClient {
       },
     });
 
-    const data = (await res.json()) as T | ApiError;
+    // Safely parse JSON to prevent "Unexpected end of JSON input" on 500s or 204s
+    const text = await res.text();
+    let data: any = {};
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = { error: text };
+      }
+    }
 
     if (!res.ok) {
       const message =
-        (data as ApiError).error ?? `HTTP error ${res.status}`;
+        data.error ?? `HTTP error ${res.status}: ${res.statusText}`;
       throw new SashApiError(message, res.status);
     }
 

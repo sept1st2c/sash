@@ -47,84 +47,92 @@ import {
 } from "@/lib/middleware-helpers";
 
 export async function POST(req: NextRequest) {
-  // ── Step 1: Validate API key ─────────────────────────────────────────────
-  let project;
   try {
-    project = await validateApiKey(req);
-  } catch (err) {
-    if (err instanceof ApiKeyError) {
-      return jsonError(err.message, 401);
+    // ── Step 1: Validate API key ─────────────────────────────────────────────
+    let project;
+    try {
+      project = await validateApiKey(req);
+    } catch (err) {
+      if (err instanceof ApiKeyError) {
+        return jsonError(err.message, 401);
+      }
+      return jsonError("Internal server error", 500);
     }
-    return jsonError("Internal server error", 500);
-  }
 
-  // ── Step 2: Rate limiting ────────────────────────────────────────────────
-  const ip = getIp(req);
-  const rateLimitKey = buildRateLimitKey(project.id, ip);
-  const { allowed } = await rateLimit(rateLimitKey, 10, 60); // 10 attempts / 60s
+    // ── Step 2: Rate limiting ────────────────────────────────────────────────
+    const ip = getIp(req);
+    const rateLimitKey = buildRateLimitKey(project.id, ip);
+    const { allowed } = await rateLimit(rateLimitKey, 10, 60); // 10 attempts / 60s
 
-  if (!allowed) {
-    return jsonError("Too many signup attempts. Please try again later.", 429);
-  }
+    if (!allowed) {
+      return jsonError("Too many signup attempts. Please try again later.", 429);
+    }
 
-  // ── Step 3: Parse + validate body ────────────────────────────────────────
-  let body: { email?: string; password?: string };
-  try {
-    body = await req.json();
-  } catch {
-    return jsonError("Invalid JSON body.", 422);
-  }
+    // ── Step 3: Parse + validate body ────────────────────────────────────────
+    let body: { email?: string; password?: string };
+    try {
+      body = await req.json();
+    } catch {
+      return jsonError("Invalid JSON body.", 422);
+    }
 
-  const { email, password } = body;
+    const { email, password } = body;
 
-  if (!email || typeof email !== "string" || !email.includes("@")) {
-    return jsonError("A valid email is required.", 422);
-  }
+    if (!email || typeof email !== "string" || !email.includes("@")) {
+      return jsonError("A valid email is required.", 422);
+    }
 
-  if (!password || typeof password !== "string" || password.length < 8) {
-    return jsonError("Password must be at least 8 characters.", 422);
-  }
+    if (!password || typeof password !== "string" || password.length < 8) {
+      return jsonError("Password must be at least 8 characters.", 422);
+    }
 
-  // ── Step 4: Check for duplicate email (project-scoped) ───────────────────
-  const existingUser = await prisma.user.findUnique({
-    where: {
-      email_projectId: {
+    // ── Step 4: Check for duplicate email (project-scoped) ───────────────────
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email_projectId: {
+          email: email.toLowerCase(),
+          projectId: project.id,
+        },
+      },
+    });
+
+    if (existingUser) {
+      return jsonError("An account with this email already exists.", 409);
+    }
+
+    // ── Step 5: Hash password ────────────────────────────────────────────────
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    // ── Step 6: Create User in DB ────────────────────────────────────────────
+    const user = await prisma.user.create({
+      data: {
         email: email.toLowerCase(),
+        passwordHash,
         projectId: project.id,
       },
-    },
-  });
+      select: {
+        id: true,
+        email: true,
+        emailVerified: true,
+        isActive: true,
+        createdAt: true,
+      },
+    });
 
-  if (existingUser) {
-    return jsonError("An account with this email already exists.", 409);
+    // ── Step 7: Create session in Redis ──────────────────────────────────────
+    const sessionId = await createSession(user.id, project.id);
+
+    // ── Step 8: Fire webhook (best-effort, don't await) ───────────────────────
+    dispatchWebhook(project, "user.signup", { id: user.id, email: user.email });
+
+    // ── Step 9 + 10: Set cookie and return response ──────────────────────────
+    const response = jsonSuccess({ user, sessionId }, 201);
+    response.cookies.set(SESSION_COOKIE_NAME, sessionId, SESSION_COOKIE_OPTIONS);
+
+    return response;
+  } catch (error: any) {
+    console.error("SIGNUP FATAL ERROR:", error);
+    return new Response(error.message || String(error), { status: 500 });
   }
-
-  // ── Step 5: Hash password ────────────────────────────────────────────────
-  const passwordHash = await bcrypt.hash(password, 12);
-
-  // ── Step 6: Create User in DB ────────────────────────────────────────────
-  const user = await prisma.user.create({
-    data: {
-      email: email.toLowerCase(),
-      passwordHash,
-      projectId: project.id,
-    },
-    select: {
-      id: true,
-      email: true,
-      createdAt: true,
-    },
-  });
-
-  // ── Step 7: Create session in Redis ──────────────────────────────────────
-  const sessionId = await createSession(user.id, project.id);
-
-  // ── Step 8: Fire webhook (best-effort, don't await) ───────────────────────
-  dispatchWebhook(project, "user.signup", { id: user.id, email: user.email });
-
-  // ── Step 9 + 10: Set cookie and return response ──────────────────────────
-  const response = jsonSuccess({ user, sessionId }, 201);
-  response.cookies.set(SESSION_COOKIE_NAME, sessionId, SESSION_COOKIE_OPTIONS);
-
-  return response;
 }
+

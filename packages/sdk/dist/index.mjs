@@ -40,9 +40,17 @@ var SashClient = class {
         ...options.headers
       }
     });
-    const data = await res.json();
+    const text = await res.text();
+    let data = {};
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = { error: text };
+      }
+    }
     if (!res.ok) {
-      const message = data.error ?? `HTTP error ${res.status}`;
+      const message = data.error ?? `HTTP error ${res.status}: ${res.statusText}`;
       throw new SashApiError(message, res.status);
     }
     return data;

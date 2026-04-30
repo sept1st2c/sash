@@ -1,0 +1,214 @@
+:root {
+  --bg-dark: #0f172a;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --error: #ef4444;
+  --success: #10b981;
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --input-bg: rgba(15, 23, 42, 0.5);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-dark);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 480px;
+  padding: 2rem;
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  background: linear-gradient(to right, #60a5fa, #c084fc);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.header p {
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--text-muted);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  color: var(--text-main);
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+button {
+  width: 100%;
+  padding: 0.875rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.secondary-button {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  box-shadow: none;
+  color: var(--text-main);
+  margin-top: 0.75rem;
+}
+
+.secondary-button:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.link-button {
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: var(--text-muted);
+  font-weight: 500;
+  padding: 0;
+  width: auto;
+  font-size: 0.875rem;
+}
+
+.link-button:hover {
+  background: none;
+  color: var(--text-main);
+  transform: none;
+}
+
+.error-msg {
+  color: var(--error);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  text-align: center;
+  padding: 0.75rem;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 8px;
+}
+
+.success-msg {
+  color: var(--success);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  text-align: center;
+  padding: 0.75rem;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 8px;
+}
+
+.user-card {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.user-card code {
+  display: block;
+  font-family: monospace;
+  font-size: 0.875rem;
+  color: #a78bfa;
+  margin-bottom: 0.5rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.badge.verified { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+.badge.unverified { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+.banner {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
