@@ -4,6 +4,13 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { FolderOpen, Users, ArrowRight, Plus } from "lucide-react";
 
+interface ProjectSummary {
+  id: string;
+  name: string;
+  createdAt: Date;
+  _count: { users: number };
+}
+
 export default async function DashboardOverviewPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
@@ -24,7 +31,7 @@ export default async function DashboardOverviewPage() {
     }),
   ]);
 
-  const totalUsers = projects.reduce((sum: number, p: any) => sum + p._count.users, 0);
+  const totalUsers = projects.reduce((sum: number, p: ProjectSummary) => sum + p._count.users, 0);
 
   return (
     <>
@@ -77,7 +84,7 @@ export default async function DashboardOverviewPage() {
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          {projects.map((project) => (
+          {projects.map((project: ProjectSummary) => (
             <Link
               key={project.id}
               href={`/dashboard/projects/${project.id}`}

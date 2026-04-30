@@ -5,6 +5,15 @@ import Link from "next/link";
 import { ArrowRight, Users } from "lucide-react";
 import CreateProjectButton from "./CreateProjectButton";
 
+interface ProjectRecord {
+  id: string;
+  name: string;
+  apiKey: string;
+  webhookUrl: string | null;
+  createdAt: Date;
+  _count: { users: number };
+}
+
 export const metadata = { title: "Projects — Sash" };
 
 export default async function ProjectsPage() {
@@ -48,7 +57,7 @@ export default async function ProjectsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {projects.map((project) => (
+          {projects.map((project: ProjectRecord) => (
             <Link
               key={project.id}
               href={`/dashboard/projects/${project.id}`}
