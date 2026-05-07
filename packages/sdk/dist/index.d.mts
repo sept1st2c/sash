@@ -104,6 +104,26 @@ declare function SashProvider({ apiKey, baseUrl, children, }: SashProviderProps)
  */
 declare function useSash(): SashState;
 
+interface SignInProps {
+    /** Text to show below the title */
+    subtitle?: string;
+    /** Callback fired upon successful login */
+    onSuccess?: () => void;
+    /** Optional URL to redirect to after successful login. Will use window.location.href if provided. */
+    redirectUrl?: string;
+}
+declare function SignIn({ subtitle, onSuccess, redirectUrl }: SignInProps): react_jsx_runtime.JSX.Element;
+
+interface SignUpProps {
+    /** Text to show below the title */
+    subtitle?: string;
+    /** Callback fired upon successful signup and verification */
+    onSuccess?: () => void;
+    /** Optional URL to redirect to after successful signup. Will use window.location.href if provided. */
+    redirectUrl?: string;
+}
+declare function SignUp({ subtitle, onSuccess, redirectUrl }: SignUpProps): react_jsx_runtime.JSX.Element;
+
 /**
  * src/client.ts
  *
@@ -203,4 +223,4 @@ declare function createClient(config: {
     baseUrl?: string;
 }): SashClient;
 
-export { type ApiError, type AuthResponse, type MessageResponse, SashApiError, SashClient, type SashConfig, SashProvider, type SashProviderProps, type SashState, type SashUser, createClient, useSash };
+export { type ApiError, type AuthResponse, type MessageResponse, SashApiError, SashClient, type SashConfig, SashProvider, type SashProviderProps, type SashState, type SashUser, SignIn, type SignInProps, SignUp, type SignUpProps, createClient, useSash };

@@ -276,10 +276,258 @@ function useSash() {
   }
   return ctx;
 }
+
+// #style-inject:#style-inject
+function styleInject(css, { insertAt } = {}) {
+  if (!css || typeof document === "undefined") return;
+  const head = document.head || document.getElementsByTagName("head")[0];
+  const style = document.createElement("style");
+  style.type = "text/css";
+  if (insertAt === "top") {
+    if (head.firstChild) {
+      head.insertBefore(style, head.firstChild);
+    } else {
+      head.appendChild(style);
+    }
+  } else {
+    head.appendChild(style);
+  }
+  if (style.styleSheet) {
+    style.styleSheet.cssText = css;
+  } else {
+    style.appendChild(document.createTextNode(css));
+  }
+}
+
+// src/index.css
+styleInject(":root {\n  --sash-brand: #6366f1;\n  --sash-brand-hover: #4f46e5;\n  --sash-bg-surface: #ffffff;\n  --sash-bg-subtle: #f9fafb;\n  --sash-border: #e5e7eb;\n  --sash-border-focus: #6366f1;\n  --sash-text-primary: #111827;\n  --sash-text-secondary: #4b5563;\n  --sash-text-muted: #9ca3af;\n  --sash-danger: #ef4444;\n  --sash-danger-bg: #fef2f2;\n}\n@media (prefers-color-scheme: dark) {\n  :root {\n    --sash-bg-surface: #0a0a0a;\n    --sash-bg-subtle: #171717;\n    --sash-border: #262626;\n    --sash-text-primary: #f9fafb;\n    --sash-text-secondary: #a1a1aa;\n    --sash-danger-bg: #450a0a;\n  }\n}\n.sash-card {\n  width: 100%;\n  max-width: 400px;\n  background-color: var(--sash-bg-surface);\n  border: 1px solid var(--sash-border);\n  border-radius: 16px;\n  padding: 32px;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);\n  font-family:\n    system-ui,\n    -apple-system,\n    sans-serif;\n  margin: 0 auto;\n}\n.sash-card-header {\n  margin-bottom: 24px;\n  text-align: center;\n}\n.sash-card-title {\n  font-size: 24px;\n  font-weight: 700;\n  color: var(--sash-text-primary);\n  margin: 0 0 8px 0;\n}\n.sash-card-subtitle {\n  font-size: 14px;\n  color: var(--sash-text-secondary);\n  margin: 0;\n}\n.sash-form-group {\n  margin-bottom: 16px;\n}\n.sash-label {\n  display: block;\n  font-size: 13px;\n  font-weight: 500;\n  color: var(--sash-text-primary);\n  margin-bottom: 6px;\n}\n.sash-input {\n  width: 100%;\n  box-sizing: border-box;\n  padding: 10px 14px;\n  background-color: var(--sash-bg-surface);\n  border: 1px solid var(--sash-border);\n  border-radius: 8px;\n  font-size: 14px;\n  color: var(--sash-text-primary);\n  transition: border-color 0.15s ease;\n  outline: none;\n}\n.sash-input:focus {\n  border-color: var(--sash-border-focus);\n  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);\n}\n.sash-input:disabled {\n  background-color: var(--sash-bg-subtle);\n  color: var(--sash-text-muted);\n  cursor: not-allowed;\n}\n.sash-button {\n  width: 100%;\n  padding: 10px 16px;\n  background-color: var(--sash-brand);\n  color: white;\n  border: none;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 600;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n.sash-button:hover:not(:disabled) {\n  background-color: var(--sash-brand-hover);\n  transform: translateY(-1px);\n}\n.sash-button:disabled {\n  opacity: 0.7;\n  cursor: not-allowed;\n}\n.sash-error {\n  background-color: var(--sash-danger-bg);\n  border: 1px solid var(--sash-danger);\n  color: var(--sash-danger);\n  padding: 10px 14px;\n  border-radius: 8px;\n  font-size: 13px;\n  margin-bottom: 16px;\n}\n.sash-footer {\n  margin-top: 24px;\n  text-align: center;\n  font-size: 13px;\n  color: var(--sash-text-secondary);\n}\n.sash-link {\n  color: var(--sash-brand);\n  text-decoration: none;\n  font-weight: 500;\n  cursor: pointer;\n}\n.sash-link:hover {\n  text-decoration: underline;\n}\n.sash-otp-container {\n  display: flex;\n  gap: 12px;\n  justify-content: center;\n  margin-bottom: 24px;\n}\n.sash-otp-input {\n  width: 40px;\n  height: 48px;\n  text-align: center;\n  font-size: 20px;\n  font-weight: 600;\n  border: 1px solid var(--sash-border);\n  border-radius: 8px;\n  background-color: var(--sash-bg-surface);\n  color: var(--sash-text-primary);\n  outline: none;\n  transition: border-color 0.15s ease;\n}\n.sash-otp-input:focus {\n  border-color: var(--sash-border-focus);\n}\n");
+
+// src/components/SignIn.tsx
+import { useState as useState2 } from "react";
+import { jsx as jsx2, jsxs } from "react/jsx-runtime";
+function SignIn({ subtitle = "to continue to your app", onSuccess, redirectUrl }) {
+  const { login } = useSash();
+  const [email, setEmail] = useState2("");
+  const [password, setPassword] = useState2("");
+  const [error, setError] = useState2("");
+  const [isLoading, setIsLoading] = useState2(false);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+    try {
+      await login(email, password);
+      if (onSuccess) {
+        onSuccess();
+      }
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      }
+    } catch (err) {
+      setError(err.message || "Failed to sign in. Please check your credentials.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  return /* @__PURE__ */ jsxs("div", { className: "sash-card", children: [
+    /* @__PURE__ */ jsxs("div", { className: "sash-card-header", children: [
+      /* @__PURE__ */ jsx2("h2", { className: "sash-card-title", children: "Sign in" }),
+      /* @__PURE__ */ jsx2("p", { className: "sash-card-subtitle", children: subtitle })
+    ] }),
+    error && /* @__PURE__ */ jsx2("div", { className: "sash-error", children: error }),
+    /* @__PURE__ */ jsxs("form", { onSubmit: handleSubmit, children: [
+      /* @__PURE__ */ jsxs("div", { className: "sash-form-group", children: [
+        /* @__PURE__ */ jsx2("label", { className: "sash-label", htmlFor: "sash-email", children: "Email address" }),
+        /* @__PURE__ */ jsx2(
+          "input",
+          {
+            id: "sash-email",
+            type: "email",
+            className: "sash-input",
+            value: email,
+            onChange: (e) => setEmail(e.target.value),
+            disabled: isLoading,
+            required: true,
+            autoComplete: "email",
+            placeholder: "you@example.com"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "sash-form-group", children: [
+        /* @__PURE__ */ jsx2("label", { className: "sash-label", htmlFor: "sash-password", children: "Password" }),
+        /* @__PURE__ */ jsx2(
+          "input",
+          {
+            id: "sash-password",
+            type: "password",
+            className: "sash-input",
+            value: password,
+            onChange: (e) => setPassword(e.target.value),
+            disabled: isLoading,
+            required: true,
+            autoComplete: "current-password"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsx2("button", { type: "submit", className: "sash-button", disabled: isLoading, children: isLoading ? "Signing in..." : "Continue" })
+    ] })
+  ] });
+}
+
+// src/components/SignUp.tsx
+import { useState as useState3, useRef as useRef2 } from "react";
+import { jsx as jsx3, jsxs as jsxs2 } from "react/jsx-runtime";
+function SignUp({ subtitle = "to continue to your app", onSuccess, redirectUrl }) {
+  const { signup, sendVerification, verifyEmail } = useSash();
+  const [step, setStep] = useState3("form");
+  const [email, setEmail] = useState3("");
+  const [password, setPassword] = useState3("");
+  const [otp, setOtp] = useState3(["", "", "", "", "", ""]);
+  const [error, setError] = useState3("");
+  const [isLoading, setIsLoading] = useState3(false);
+  const otpRefs = useRef2([]);
+  const handleSignupSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+    try {
+      await signup(email, password);
+      await sendVerification(email);
+      setStep("verify");
+    } catch (err) {
+      setError(err.message || "Failed to create account.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleOtpChange = (index, value) => {
+    if (!/^\d*$/.test(value)) return;
+    const newOtp = [...otp];
+    if (value.length > 1) {
+      const chars = value.split("").slice(0, 6);
+      chars.forEach((c, i) => {
+        if (index + i < 6) newOtp[index + i] = c;
+      });
+      setOtp(newOtp);
+      const nextEmpty = newOtp.findIndex((v) => v === "");
+      if (nextEmpty !== -1 && otpRefs.current[nextEmpty]) {
+        otpRefs.current[nextEmpty]?.focus();
+      } else if (otpRefs.current[5]) {
+        otpRefs.current[5]?.focus();
+      }
+      return;
+    }
+    newOtp[index] = value;
+    setOtp(newOtp);
+    if (value && index < 5 && otpRefs.current[index + 1]) {
+      otpRefs.current[index + 1]?.focus();
+    }
+  };
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus();
+    }
+  };
+  const handleVerifySubmit = async (e) => {
+    e.preventDefault();
+    const code = otp.join("");
+    if (code.length !== 6) {
+      setError("Please enter the full 6-digit code.");
+      return;
+    }
+    setError("");
+    setIsLoading(true);
+    try {
+      await verifyEmail(email, code);
+      if (onSuccess) onSuccess();
+      if (redirectUrl) window.location.href = redirectUrl;
+    } catch (err) {
+      setError(err.message || "Verification failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  if (step === "verify") {
+    return /* @__PURE__ */ jsxs2("div", { className: "sash-card", children: [
+      /* @__PURE__ */ jsxs2("div", { className: "sash-card-header", children: [
+        /* @__PURE__ */ jsx3("h2", { className: "sash-card-title", children: "Check your email" }),
+        /* @__PURE__ */ jsxs2("p", { className: "sash-card-subtitle", children: [
+          "We sent a 6-digit code to ",
+          /* @__PURE__ */ jsx3("strong", { children: email })
+        ] })
+      ] }),
+      error && /* @__PURE__ */ jsx3("div", { className: "sash-error", children: error }),
+      /* @__PURE__ */ jsxs2("form", { onSubmit: handleVerifySubmit, children: [
+        /* @__PURE__ */ jsx3("div", { className: "sash-otp-container", children: otp.map((digit, i) => /* @__PURE__ */ jsx3(
+          "input",
+          {
+            ref: (el) => otpRefs.current[i] = el,
+            type: "text",
+            inputMode: "numeric",
+            maxLength: 6,
+            className: "sash-otp-input",
+            value: digit,
+            onChange: (e) => handleOtpChange(i, e.target.value),
+            onKeyDown: (e) => handleOtpKeyDown(i, e),
+            disabled: isLoading
+          },
+          i
+        )) }),
+        /* @__PURE__ */ jsx3("button", { type: "submit", className: "sash-button", disabled: isLoading || otp.join("").length !== 6, children: isLoading ? "Verifying..." : "Verify email" })
+      ] })
+    ] });
+  }
+  return /* @__PURE__ */ jsxs2("div", { className: "sash-card", children: [
+    /* @__PURE__ */ jsxs2("div", { className: "sash-card-header", children: [
+      /* @__PURE__ */ jsx3("h2", { className: "sash-card-title", children: "Create an account" }),
+      /* @__PURE__ */ jsx3("p", { className: "sash-card-subtitle", children: subtitle })
+    ] }),
+    error && /* @__PURE__ */ jsx3("div", { className: "sash-error", children: error }),
+    /* @__PURE__ */ jsxs2("form", { onSubmit: handleSignupSubmit, children: [
+      /* @__PURE__ */ jsxs2("div", { className: "sash-form-group", children: [
+        /* @__PURE__ */ jsx3("label", { className: "sash-label", htmlFor: "sash-email", children: "Email address" }),
+        /* @__PURE__ */ jsx3(
+          "input",
+          {
+            id: "sash-email",
+            type: "email",
+            className: "sash-input",
+            value: email,
+            onChange: (e) => setEmail(e.target.value),
+            disabled: isLoading,
+            required: true,
+            autoComplete: "email",
+            placeholder: "you@example.com"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs2("div", { className: "sash-form-group", children: [
+        /* @__PURE__ */ jsx3("label", { className: "sash-label", htmlFor: "sash-password", children: "Password" }),
+        /* @__PURE__ */ jsx3(
+          "input",
+          {
+            id: "sash-password",
+            type: "password",
+            className: "sash-input",
+            value: password,
+            onChange: (e) => setPassword(e.target.value),
+            disabled: isLoading,
+            required: true,
+            autoComplete: "new-password",
+            placeholder: "Must be at least 8 characters"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsx3("button", { type: "submit", className: "sash-button", disabled: isLoading, children: isLoading ? "Creating account..." : "Continue" })
+    ] })
+  ] });
+}
 export {
   SashApiError,
   SashClient,
   SashProvider,
+  SignIn,
+  SignUp,
   createClient,
   useSash
 };

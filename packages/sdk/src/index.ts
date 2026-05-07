@@ -25,6 +25,13 @@
 export { SashProvider, useSash } from "./context";
 export type { SashProviderProps } from "./context";
 
+// ── UI Components ─────────────────────────────────────────────────────────────
+import "./index.css";
+export { SignIn } from "./components/SignIn";
+export type { SignInProps } from "./components/SignIn";
+export { SignUp } from "./components/SignUp";
+export type { SignUpProps } from "./components/SignUp";
+
 // ── Low-level client ──────────────────────────────────────────────────────────
 export { SashClient, SashApiError, createClient } from "./client";
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSash } from "@sash/sdk";
+import { useSash, SignIn, SignUp } from "@sash/sdk";
 
 export default function App() {
   const { user, loading } = useSash();
@@ -106,134 +106,31 @@ function AuthenticatedView() {
 // ─── Unauthenticated Flow ──────────────────────────────────────────────────────
 
 function UnauthenticatedView() {
-  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
-  const { login, signup, forgotPassword, resetPassword } = useSash();
-  
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [code, setCode] = useState("");
-  
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  
-  // Specifically for the "reset" step after forgotPassword succeeds
-  const [resetSent, setResetSent] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    setSuccess("");
-
-    try {
-      if (mode === "login") {
-        await login(email, password);
-      } else if (mode === "signup") {
-        await signup(email, password);
-      } else if (mode === "forgot") {
-        if (!resetSent) {
-          await forgotPassword(email);
-          setSuccess("If an account exists, a reset code was sent.");
-          setResetSent(true);
-        } else {
-          await resetPassword(email, code, password);
-          setSuccess("Password reset successful! You can now log in.");
-          setMode("login");
-          setResetSent(false);
-          setPassword("");
-          setCode("");
-        }
-      }
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [mode, setMode] = useState<"login" | "signup">("login");
 
   return (
-    <div className="glass-card">
-      <div className="header">
-        <h1>{mode === "login" ? "Welcome Back" : mode === "signup" ? "Create Account" : "Reset Password"}</h1>
-        <p>Sash React SDK Demo</p>
-      </div>
-
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={resetSent} // freeze email if waiting for code
-          />
-        </div>
-
-        {(!resetSent) && mode !== "forgot" && (
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-        )}
-
-        {resetSent && (
-          <>
-            <div className="form-group">
-              <label>6-Digit Reset Code</label>
-              <input
-                type="text"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                maxLength={6}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>New Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-          </>
-        )}
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Please wait..." : 
-            mode === "login" ? "Sign In" : 
-            mode === "signup" ? "Sign Up" : 
-            resetSent ? "Save New Password" : "Send Reset Code"}
-        </button>
-      </form>
-
-      {error && <div className="error-msg">{error}</div>}
-      {success && <div className="success-msg">{success}</div>}
-
-      <div style={{ marginTop: "1.5rem", textAlign: "center", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-        {mode === "login" ? (
-          <>
-            <button type="button" className="link-button" onClick={() => setMode("signup")}>
-              Don't have an account? Sign up
+    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+      {mode === "login" ? (
+        <>
+          <SignIn subtitle="Sign in to test the React SDK" />
+          <p style={{ textAlign: "center", color: "var(--sash-text-secondary)", fontSize: "14px" }}>
+            Don't have an account?{" "}
+            <button className="link-button" onClick={() => setMode("signup")} style={{ color: "var(--sash-brand)", background: "none", border: "none", cursor: "pointer", fontWeight: "500" }}>
+              Sign up
             </button>
-            <button type="button" className="link-button" onClick={() => setMode("forgot")}>
-              Forgot password?
+          </p>
+        </>
+      ) : (
+        <>
+          <SignUp subtitle="Create an account to test the React SDK" />
+          <p style={{ textAlign: "center", color: "var(--sash-text-secondary)", fontSize: "14px" }}>
+            Already have an account?{" "}
+            <button className="link-button" onClick={() => setMode("login")} style={{ color: "var(--sash-brand)", background: "none", border: "none", cursor: "pointer", fontWeight: "500" }}>
+              Sign in
             </button>
-          </>
-        ) : (
-          <button type="button" className="link-button" onClick={() => { setMode("login"); setResetSent(false); }}>
-            Back to login
-          </button>
-        )}
-      </div>
+          </p>
+        </>
+      )}
     </div>
   );
 }

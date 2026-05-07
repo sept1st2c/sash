@@ -1,6 +1,6 @@
 {
   "name": "@septic/sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React SDK for Sash Auth-as-a-Service",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -14,8 +14,8 @@
   },
   "files": ["dist"],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean --injectStyle",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch --injectStyle",
     "typecheck": "tsc --noEmit"
   },
   "keywords": ["auth", "sash", "react", "sdk"],
