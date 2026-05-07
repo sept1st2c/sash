@@ -23,6 +23,7 @@ import { verifyOtp } from "@/lib/otp";
 import { invalidateAllUserSessions } from "@/lib/session";
 import { dispatchWebhook } from "@/lib/webhook";
 import { jsonError, jsonSuccess } from "@/lib/middleware-helpers";
+import { resetPasswordSchema, safeParse } from "@/lib/validations";
 
 export async function POST(req: NextRequest) {
   // ── Step 1: API key ───────────────────────────────────────────────────────
@@ -34,18 +35,19 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Step 2: Parse body ────────────────────────────────────────────────────
-  let body: { email?: string; code?: string; newPassword?: string };
+  let rawBody: unknown;
   try {
-    body = await req.json();
+    rawBody = await req.json();
   } catch {
     return jsonError("Invalid JSON body.", 422);
   }
 
-  const { email, code, newPassword } = body;
-  if (!email || typeof email !== "string") return jsonError("email is required.", 422);
-  if (!code || typeof code !== "string") return jsonError("code is required.", 422);
-  if (!newPassword || typeof newPassword !== "string") return jsonError("newPassword is required.", 422);
-  if (newPassword.length < 8) return jsonError("Password must be at least 8 characters.", 422);
+  const parsed = safeParse(resetPasswordSchema, rawBody);
+  if (parsed.errors) {
+    return jsonError(parsed.errors.join(" "), 422);
+  }
+
+  const { email, code, newPassword } = parsed.data;
 
   // ── Step 3: Look up user ──────────────────────────────────────────────────
   const user = await prisma.user.findUnique({

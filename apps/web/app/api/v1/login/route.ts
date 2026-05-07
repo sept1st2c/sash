@@ -47,6 +47,7 @@ import {
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_OPTIONS,
 } from "@/lib/middleware-helpers";
+import { loginSchema, safeParse } from "@/lib/validations";
 
 const INVALID_CREDENTIALS_MSG = "Invalid credentials."; // never be more specific
 
@@ -72,22 +73,19 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Step 3: Parse + validate body ────────────────────────────────────────
-  let body: { email?: string; password?: string };
+  let rawBody: unknown;
   try {
-    body = await req.json();
+    rawBody = await req.json();
   } catch {
     return jsonError("Invalid JSON body.", 422);
   }
 
-  const { email, password } = body;
-
-  if (!email || typeof email !== "string") {
-    return jsonError("Email is required.", 422);
+  const parsed = safeParse(loginSchema, rawBody);
+  if (parsed.errors) {
+    return jsonError(parsed.errors.join(" "), 422);
   }
 
-  if (!password || typeof password !== "string") {
-    return jsonError("Password is required.", 422);
-  }
+  const { email, password } = parsed.data;
 
   // ── Step 4: Find user (project-scoped) ───────────────────────────────────
   const user = await prisma.user.findUnique({

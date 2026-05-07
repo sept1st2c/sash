@@ -19,6 +19,7 @@ import { prisma } from "@/lib/prisma";
 import { generateOtp, storeOtp } from "@/lib/otp";
 import { sendPasswordResetEmail } from "@/lib/email";
 import { jsonError, jsonSuccess } from "@/lib/middleware-helpers";
+import { forgotPasswordSchema, safeParse } from "@/lib/validations";
 
 export async function POST(req: NextRequest) {
   // ── Step 1: API key ───────────────────────────────────────────────────────
@@ -30,17 +31,19 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Step 2: Parse body ────────────────────────────────────────────────────
-  let body: { email?: string };
+  let rawBody: unknown;
   try {
-    body = await req.json();
+    rawBody = await req.json();
   } catch {
     return jsonError("Invalid JSON body.", 422);
   }
 
-  const { email } = body;
-  if (!email || typeof email !== "string") {
-    return jsonError("A valid email is required.", 422);
+  const parsed = safeParse(forgotPasswordSchema, rawBody);
+  if (parsed.errors) {
+    return jsonError(parsed.errors.join(" "), 422);
   }
+
+  const { email } = parsed.data;
 
   const genericResponse = jsonSuccess({
     message: "If an account with that email exists, a reset code has been sent.",

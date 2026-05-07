@@ -45,6 +45,7 @@ import {
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_OPTIONS,
 } from "@/lib/middleware-helpers";
+import { signupSchema, safeParse } from "@/lib/validations";
 
 export async function POST(req: NextRequest) {
   try {
@@ -69,22 +70,19 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Step 3: Parse + validate body ────────────────────────────────────────
-    let body: { email?: string; password?: string };
+    let rawBody: unknown;
     try {
-      body = await req.json();
+      rawBody = await req.json();
     } catch {
       return jsonError("Invalid JSON body.", 422);
     }
 
-    const { email, password } = body;
-
-    if (!email || typeof email !== "string" || !email.includes("@")) {
-      return jsonError("A valid email is required.", 422);
+    const parsed = safeParse(signupSchema, rawBody);
+    if (parsed.errors) {
+      return jsonError(parsed.errors.join(" "), 422);
     }
 
-    if (!password || typeof password !== "string" || password.length < 8) {
-      return jsonError("Password must be at least 8 characters.", 422);
-    }
+    const { email, password } = parsed.data;
 
     // ── Step 4: Check for duplicate email (project-scoped) ───────────────────
     const existingUser = await prisma.user.findUnique({
