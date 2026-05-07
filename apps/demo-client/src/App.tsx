@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSash, SignIn, SignUp } from "@sash/sdk";
+import { useSash, SignIn, SignUp, ForgotPassword } from "@sash/sdk";
 
 export default function App() {
   const { user, loading } = useSash();
@@ -106,13 +106,16 @@ function AuthenticatedView() {
 // ─── Unauthenticated Flow ──────────────────────────────────────────────────────
 
 function UnauthenticatedView() {
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-      {mode === "login" ? (
+      {mode === "login" && (
         <>
-          <SignIn subtitle="Sign in to test the React SDK" />
+          <SignIn 
+            subtitle="Sign in to test the React SDK" 
+            onForgotPassword={() => setMode("forgot")}
+          />
           <p style={{ textAlign: "center", color: "var(--sash-text-secondary)", fontSize: "14px" }}>
             Don't have an account?{" "}
             <button className="link-button" onClick={() => setMode("signup")} style={{ color: "var(--sash-brand)", background: "none", border: "none", cursor: "pointer", fontWeight: "500" }}>
@@ -120,7 +123,9 @@ function UnauthenticatedView() {
             </button>
           </p>
         </>
-      ) : (
+      )}
+      
+      {mode === "signup" && (
         <>
           <SignUp subtitle="Create an account to test the React SDK" />
           <p style={{ textAlign: "center", color: "var(--sash-text-secondary)", fontSize: "14px" }}>
@@ -130,6 +135,14 @@ function UnauthenticatedView() {
             </button>
           </p>
         </>
+      )}
+
+      {mode === "forgot" && (
+        <ForgotPassword 
+          subtitle="We'll send a code to reset your password"
+          onBackToSignIn={() => setMode("login")}
+          onSuccess={() => setMode("login")}
+        />
       )}
     </div>
   );

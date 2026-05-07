@@ -305,7 +305,7 @@ styleInject(":root {\n  --sash-brand: #6366f1;\n  --sash-brand-hover: #4f46e5;\n
 // src/components/SignIn.tsx
 import { useState as useState2 } from "react";
 import { jsx as jsx2, jsxs } from "react/jsx-runtime";
-function SignIn({ subtitle = "to continue to your app", onSuccess, redirectUrl }) {
+function SignIn({ subtitle = "to continue to your app", onSuccess, redirectUrl, onForgotPassword }) {
   const { login } = useSash();
   const [email, setEmail] = useState2("");
   const [password, setPassword] = useState2("");
@@ -354,7 +354,20 @@ function SignIn({ subtitle = "to continue to your app", onSuccess, redirectUrl }
         )
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "sash-form-group", children: [
-        /* @__PURE__ */ jsx2("label", { className: "sash-label", htmlFor: "sash-password", children: "Password" }),
+        /* @__PURE__ */ jsxs("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }, children: [
+          /* @__PURE__ */ jsx2("label", { className: "sash-label", htmlFor: "sash-password", style: { marginBottom: 0 }, children: "Password" }),
+          onForgotPassword && /* @__PURE__ */ jsx2(
+            "button",
+            {
+              type: "button",
+              className: "sash-link",
+              onClick: onForgotPassword,
+              style: { background: "none", border: "none", fontSize: "12px", padding: 0 },
+              tabIndex: -1,
+              children: "Forgot password?"
+            }
+          )
+        ] }),
         /* @__PURE__ */ jsx2(
           "input",
           {
@@ -522,7 +535,156 @@ function SignUp({ subtitle = "to continue to your app", onSuccess, redirectUrl }
     ] })
   ] });
 }
+
+// src/components/ForgotPassword.tsx
+import { useState as useState4, useRef as useRef3 } from "react";
+import { jsx as jsx4, jsxs as jsxs3 } from "react/jsx-runtime";
+function ForgotPassword({ subtitle = "Reset your password", onSuccess, onBackToSignIn }) {
+  const { forgotPassword, resetPassword } = useSash();
+  const [step, setStep] = useState4("email");
+  const [email, setEmail] = useState4("");
+  const [newPassword, setNewPassword] = useState4("");
+  const [otp, setOtp] = useState4(["", "", "", "", "", ""]);
+  const [error, setError] = useState4("");
+  const [isLoading, setIsLoading] = useState4(false);
+  const otpRefs = useRef3([]);
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+    try {
+      await forgotPassword(email);
+      setStep("reset");
+    } catch (err) {
+      setError(err.message || "Failed to request reset code.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleOtpChange = (index, value) => {
+    if (!/^\d*$/.test(value)) return;
+    const newOtp = [...otp];
+    if (value.length > 1) {
+      const chars = value.split("").slice(0, 6);
+      chars.forEach((c, i) => {
+        if (index + i < 6) newOtp[index + i] = c;
+      });
+      setOtp(newOtp);
+      const nextEmpty = newOtp.findIndex((v) => v === "");
+      if (nextEmpty !== -1 && otpRefs.current[nextEmpty]) {
+        otpRefs.current[nextEmpty]?.focus();
+      } else if (otpRefs.current[5]) {
+        otpRefs.current[5]?.focus();
+      }
+      return;
+    }
+    newOtp[index] = value;
+    setOtp(newOtp);
+    if (value && index < 5 && otpRefs.current[index + 1]) {
+      otpRefs.current[index + 1]?.focus();
+    }
+  };
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus();
+    }
+  };
+  const handleResetSubmit = async (e) => {
+    e.preventDefault();
+    const code = otp.join("");
+    if (code.length !== 6) {
+      setError("Please enter the full 6-digit code.");
+      return;
+    }
+    setError("");
+    setIsLoading(true);
+    try {
+      await resetPassword(email, code, newPassword);
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      setError(err.message || "Failed to reset password. Please check the code.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  if (step === "reset") {
+    return /* @__PURE__ */ jsxs3("div", { className: "sash-card", children: [
+      /* @__PURE__ */ jsxs3("div", { className: "sash-card-header", children: [
+        /* @__PURE__ */ jsx4("h2", { className: "sash-card-title", children: "Check your email" }),
+        /* @__PURE__ */ jsxs3("p", { className: "sash-card-subtitle", children: [
+          "We sent a 6-digit reset code to ",
+          /* @__PURE__ */ jsx4("strong", { children: email })
+        ] })
+      ] }),
+      error && /* @__PURE__ */ jsx4("div", { className: "sash-error", children: error }),
+      /* @__PURE__ */ jsxs3("form", { onSubmit: handleResetSubmit, children: [
+        /* @__PURE__ */ jsx4("div", { className: "sash-otp-container", children: otp.map((digit, i) => /* @__PURE__ */ jsx4(
+          "input",
+          {
+            ref: (el) => otpRefs.current[i] = el,
+            type: "text",
+            inputMode: "numeric",
+            maxLength: 6,
+            className: "sash-otp-input",
+            value: digit,
+            onChange: (e) => handleOtpChange(i, e.target.value),
+            onKeyDown: (e) => handleOtpKeyDown(i, e),
+            disabled: isLoading
+          },
+          i
+        )) }),
+        /* @__PURE__ */ jsxs3("div", { className: "sash-form-group", children: [
+          /* @__PURE__ */ jsx4("label", { className: "sash-label", htmlFor: "sash-new-password", children: "New Password" }),
+          /* @__PURE__ */ jsx4(
+            "input",
+            {
+              id: "sash-new-password",
+              type: "password",
+              className: "sash-input",
+              value: newPassword,
+              onChange: (e) => setNewPassword(e.target.value),
+              disabled: isLoading,
+              required: true,
+              autoComplete: "new-password",
+              placeholder: "Must be at least 8 characters"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsx4("button", { type: "submit", className: "sash-button", disabled: isLoading || otp.join("").length !== 6, children: isLoading ? "Saving..." : "Save New Password" })
+      ] })
+    ] });
+  }
+  return /* @__PURE__ */ jsxs3("div", { className: "sash-card", children: [
+    /* @__PURE__ */ jsxs3("div", { className: "sash-card-header", children: [
+      /* @__PURE__ */ jsx4("h2", { className: "sash-card-title", children: "Reset password" }),
+      /* @__PURE__ */ jsx4("p", { className: "sash-card-subtitle", children: subtitle })
+    ] }),
+    error && /* @__PURE__ */ jsx4("div", { className: "sash-error", children: error }),
+    /* @__PURE__ */ jsxs3("form", { onSubmit: handleEmailSubmit, children: [
+      /* @__PURE__ */ jsxs3("div", { className: "sash-form-group", children: [
+        /* @__PURE__ */ jsx4("label", { className: "sash-label", htmlFor: "sash-forgot-email", children: "Email address" }),
+        /* @__PURE__ */ jsx4(
+          "input",
+          {
+            id: "sash-forgot-email",
+            type: "email",
+            className: "sash-input",
+            value: email,
+            onChange: (e) => setEmail(e.target.value),
+            disabled: isLoading,
+            required: true,
+            autoComplete: "email",
+            placeholder: "you@example.com"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsx4("button", { type: "submit", className: "sash-button", disabled: isLoading, children: isLoading ? "Sending code..." : "Send Reset Code" })
+    ] }),
+    onBackToSignIn && /* @__PURE__ */ jsx4("div", { className: "sash-footer", children: /* @__PURE__ */ jsx4("button", { className: "sash-link", onClick: onBackToSignIn, style: { background: "none", border: "none", fontSize: "13px" }, children: "\u2190 Back to sign in" }) })
+  ] });
+}
 export {
+  ForgotPassword,
   SashApiError,
   SashClient,
   SashProvider,

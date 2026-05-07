@@ -8,9 +8,11 @@ export interface SignInProps {
   onSuccess?: () => void;
   /** Optional URL to redirect to after successful login. Will use window.location.href if provided. */
   redirectUrl?: string;
+  /** Callback fired when the user clicks 'Forgot password?' */
+  onForgotPassword?: () => void;
 }
 
-export function SignIn({ subtitle = "to continue to your app", onSuccess, redirectUrl }: SignInProps) {
+export function SignIn({ subtitle = "to continue to your app", onSuccess, redirectUrl, onForgotPassword }: SignInProps) {
   const { login } = useSash();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -64,7 +66,20 @@ export function SignIn({ subtitle = "to continue to your app", onSuccess, redire
         </div>
 
         <div className="sash-form-group">
-          <label className="sash-label" htmlFor="sash-password">Password</label>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+            <label className="sash-label" htmlFor="sash-password" style={{ marginBottom: 0 }}>Password</label>
+            {onForgotPassword && (
+              <button
+                type="button"
+                className="sash-link"
+                onClick={onForgotPassword}
+                style={{ background: "none", border: "none", fontSize: "12px", padding: 0 }}
+                tabIndex={-1}
+              >
+                Forgot password?
+              </button>
+            )}
+          </div>
           <input
             id="sash-password"
             type="password"

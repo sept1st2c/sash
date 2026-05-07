@@ -111,8 +111,10 @@ interface SignInProps {
     onSuccess?: () => void;
     /** Optional URL to redirect to after successful login. Will use window.location.href if provided. */
     redirectUrl?: string;
+    /** Callback fired when the user clicks 'Forgot password?' */
+    onForgotPassword?: () => void;
 }
-declare function SignIn({ subtitle, onSuccess, redirectUrl }: SignInProps): react_jsx_runtime.JSX.Element;
+declare function SignIn({ subtitle, onSuccess, redirectUrl, onForgotPassword }: SignInProps): react_jsx_runtime.JSX.Element;
 
 interface SignUpProps {
     /** Text to show below the title */
@@ -123,6 +125,16 @@ interface SignUpProps {
     redirectUrl?: string;
 }
 declare function SignUp({ subtitle, onSuccess, redirectUrl }: SignUpProps): react_jsx_runtime.JSX.Element;
+
+interface ForgotPasswordProps {
+    /** Text to show below the title */
+    subtitle?: string;
+    /** Callback fired upon successful password reset */
+    onSuccess?: () => void;
+    /** Callback to trigger when the user clicks "Back to sign in" */
+    onBackToSignIn?: () => void;
+}
+declare function ForgotPassword({ subtitle, onSuccess, onBackToSignIn }: ForgotPasswordProps): react_jsx_runtime.JSX.Element;
 
 /**
  * src/client.ts
@@ -223,4 +235,4 @@ declare function createClient(config: {
     baseUrl?: string;
 }): SashClient;
 
-export { type ApiError, type AuthResponse, type MessageResponse, SashApiError, SashClient, type SashConfig, SashProvider, type SashProviderProps, type SashState, type SashUser, SignIn, type SignInProps, SignUp, type SignUpProps, createClient, useSash };
+export { type ApiError, type AuthResponse, ForgotPassword, type ForgotPasswordProps, type MessageResponse, SashApiError, SashClient, type SashConfig, SashProvider, type SashProviderProps, type SashState, type SashUser, SignIn, type SignInProps, SignUp, type SignUpProps, createClient, useSash };

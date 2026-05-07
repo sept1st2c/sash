@@ -20,6 +20,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var index_exports = {};
 __export(index_exports, {
+  ForgotPassword: () => ForgotPassword,
   SashApiError: () => SashApiError,
   SashClient: () => SashClient,
   SashProvider: () => SashProvider,
@@ -329,7 +330,7 @@ styleInject(":root {\n  --sash-brand: #6366f1;\n  --sash-brand-hover: #4f46e5;\n
 // src/components/SignIn.tsx
 var import_react2 = require("react");
 var import_jsx_runtime2 = require("react/jsx-runtime");
-function SignIn({ subtitle = "to continue to your app", onSuccess, redirectUrl }) {
+function SignIn({ subtitle = "to continue to your app", onSuccess, redirectUrl, onForgotPassword }) {
   const { login } = useSash();
   const [email, setEmail] = (0, import_react2.useState)("");
   const [password, setPassword] = (0, import_react2.useState)("");
@@ -378,7 +379,20 @@ function SignIn({ subtitle = "to continue to your app", onSuccess, redirectUrl }
         )
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "sash-form-group", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("label", { className: "sash-label", htmlFor: "sash-password", children: "Password" }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("label", { className: "sash-label", htmlFor: "sash-password", style: { marginBottom: 0 }, children: "Password" }),
+          onForgotPassword && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+            "button",
+            {
+              type: "button",
+              className: "sash-link",
+              onClick: onForgotPassword,
+              style: { background: "none", border: "none", fontSize: "12px", padding: 0 },
+              tabIndex: -1,
+              children: "Forgot password?"
+            }
+          )
+        ] }),
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
           "input",
           {
@@ -546,8 +560,157 @@ function SignUp({ subtitle = "to continue to your app", onSuccess, redirectUrl }
     ] })
   ] });
 }
+
+// src/components/ForgotPassword.tsx
+var import_react4 = require("react");
+var import_jsx_runtime4 = require("react/jsx-runtime");
+function ForgotPassword({ subtitle = "Reset your password", onSuccess, onBackToSignIn }) {
+  const { forgotPassword, resetPassword } = useSash();
+  const [step, setStep] = (0, import_react4.useState)("email");
+  const [email, setEmail] = (0, import_react4.useState)("");
+  const [newPassword, setNewPassword] = (0, import_react4.useState)("");
+  const [otp, setOtp] = (0, import_react4.useState)(["", "", "", "", "", ""]);
+  const [error, setError] = (0, import_react4.useState)("");
+  const [isLoading, setIsLoading] = (0, import_react4.useState)(false);
+  const otpRefs = (0, import_react4.useRef)([]);
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+    try {
+      await forgotPassword(email);
+      setStep("reset");
+    } catch (err) {
+      setError(err.message || "Failed to request reset code.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleOtpChange = (index, value) => {
+    if (!/^\d*$/.test(value)) return;
+    const newOtp = [...otp];
+    if (value.length > 1) {
+      const chars = value.split("").slice(0, 6);
+      chars.forEach((c, i) => {
+        if (index + i < 6) newOtp[index + i] = c;
+      });
+      setOtp(newOtp);
+      const nextEmpty = newOtp.findIndex((v) => v === "");
+      if (nextEmpty !== -1 && otpRefs.current[nextEmpty]) {
+        otpRefs.current[nextEmpty]?.focus();
+      } else if (otpRefs.current[5]) {
+        otpRefs.current[5]?.focus();
+      }
+      return;
+    }
+    newOtp[index] = value;
+    setOtp(newOtp);
+    if (value && index < 5 && otpRefs.current[index + 1]) {
+      otpRefs.current[index + 1]?.focus();
+    }
+  };
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus();
+    }
+  };
+  const handleResetSubmit = async (e) => {
+    e.preventDefault();
+    const code = otp.join("");
+    if (code.length !== 6) {
+      setError("Please enter the full 6-digit code.");
+      return;
+    }
+    setError("");
+    setIsLoading(true);
+    try {
+      await resetPassword(email, code, newPassword);
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      setError(err.message || "Failed to reset password. Please check the code.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  if (step === "reset") {
+    return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: "sash-card", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: "sash-card-header", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("h2", { className: "sash-card-title", children: "Check your email" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("p", { className: "sash-card-subtitle", children: [
+          "We sent a 6-digit reset code to ",
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("strong", { children: email })
+        ] })
+      ] }),
+      error && /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: "sash-error", children: error }),
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("form", { onSubmit: handleResetSubmit, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: "sash-otp-container", children: otp.map((digit, i) => /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+          "input",
+          {
+            ref: (el) => otpRefs.current[i] = el,
+            type: "text",
+            inputMode: "numeric",
+            maxLength: 6,
+            className: "sash-otp-input",
+            value: digit,
+            onChange: (e) => handleOtpChange(i, e.target.value),
+            onKeyDown: (e) => handleOtpKeyDown(i, e),
+            disabled: isLoading
+          },
+          i
+        )) }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: "sash-form-group", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("label", { className: "sash-label", htmlFor: "sash-new-password", children: "New Password" }),
+          /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+            "input",
+            {
+              id: "sash-new-password",
+              type: "password",
+              className: "sash-input",
+              value: newPassword,
+              onChange: (e) => setNewPassword(e.target.value),
+              disabled: isLoading,
+              required: true,
+              autoComplete: "new-password",
+              placeholder: "Must be at least 8 characters"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("button", { type: "submit", className: "sash-button", disabled: isLoading || otp.join("").length !== 6, children: isLoading ? "Saving..." : "Save New Password" })
+      ] })
+    ] });
+  }
+  return /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: "sash-card", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: "sash-card-header", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("h2", { className: "sash-card-title", children: "Reset password" }),
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("p", { className: "sash-card-subtitle", children: subtitle })
+    ] }),
+    error && /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: "sash-error", children: error }),
+    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("form", { onSubmit: handleEmailSubmit, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)("div", { className: "sash-form-group", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("label", { className: "sash-label", htmlFor: "sash-forgot-email", children: "Email address" }),
+        /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+          "input",
+          {
+            id: "sash-forgot-email",
+            type: "email",
+            className: "sash-input",
+            value: email,
+            onChange: (e) => setEmail(e.target.value),
+            disabled: isLoading,
+            required: true,
+            autoComplete: "email",
+            placeholder: "you@example.com"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("button", { type: "submit", className: "sash-button", disabled: isLoading, children: isLoading ? "Sending code..." : "Send Reset Code" })
+    ] }),
+    onBackToSignIn && /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("div", { className: "sash-footer", children: /* @__PURE__ */ (0, import_jsx_runtime4.jsx)("button", { className: "sash-link", onClick: onBackToSignIn, style: { background: "none", border: "none", fontSize: "13px" }, children: "\u2190 Back to sign in" }) })
+  ] });
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  ForgotPassword,
   SashApiError,
   SashClient,
   SashProvider,
