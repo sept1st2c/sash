@@ -54,19 +54,21 @@ export default async function ProjectDetailPage({ params }: Params) {
 
       {/* Stats bar */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="bg-[color:var(--color-bg-surface)] border border-[color:var(--color-border-subtle)] rounded-[16px] p-5 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <Users size={16} className="text-emerald-500" />
-            <span className="text-[13px] text-[color:var(--color-text-secondary)]">Total Users</span>
+        <div className="bg-[color:var(--color-bg-surface)] border border-[color:var(--color-border-subtle)] rounded-[16px] p-5 shadow-sm flex flex-col">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Users size={16} className="text-emerald-500" />
+              <span className="text-[13px] text-[color:var(--color-text-secondary)]">Total Users</span>
+            </div>
+            <Link
+              href={`/dashboard/projects/${project.id}/users`}
+              className="text-[12px] font-medium text-[color:var(--color-brand-light)] hover:underline decoration-brand/30 underline-offset-4"
+            >
+              View Directory &rarr;
+            </Link>
           </div>
           <div className="text-[24px] font-bold text-[color:var(--color-text-primary)] tracking-tight">{project._count.users}</div>
-          <div className="text-[12px] text-[color:var(--color-text-secondary)] mt-1 mb-4">Registered via this project</div>
-          <Link
-            href={`/dashboard/projects/${project.id}/users`}
-            className="inline-flex items-center gap-1.5 text-[13px] text-[color:var(--color-brand-light)] font-medium hover:underline decoration-brand/30 underline-offset-4"
-          >
-            View Users Directory &rarr;
-          </Link>
+          <div className="text-[12px] text-[color:var(--color-text-secondary)] mt-1">Registered via this project</div>
         </div>
       </div>
 
