@@ -60,7 +60,13 @@ export default async function ProjectDetailPage({ params }: Params) {
             <span className="text-[13px] text-[color:var(--color-text-secondary)]">Total Users</span>
           </div>
           <div className="text-[24px] font-bold text-[color:var(--color-text-primary)] tracking-tight">{project._count.users}</div>
-          <div className="text-[12px] text-[color:var(--color-text-secondary)] mt-1">Registered via this project</div>
+          <div className="text-[12px] text-[color:var(--color-text-secondary)] mt-1 mb-4">Registered via this project</div>
+          <Link
+            href={`/dashboard/projects/${project.id}/users`}
+            className="inline-flex items-center gap-1.5 text-[13px] text-[color:var(--color-brand-light)] font-medium hover:underline decoration-brand/30 underline-offset-4"
+          >
+            View Users Directory &rarr;
+          </Link>
         </div>
       </div>
 
