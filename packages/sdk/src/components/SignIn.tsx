@@ -33,8 +33,12 @@ export function SignIn({ subtitle = "to continue to your app", onSuccess, redire
       if (redirectUrl) {
         window.location.href = redirectUrl;
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to sign in. Please check your credentials.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Failed to sign in. Please check your credentials.");
+      } else {
+        setError("Failed to sign in. Please check your credentials.");
+      }
     } finally {
       setIsLoading(false);
     }

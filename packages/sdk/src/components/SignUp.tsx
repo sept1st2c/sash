@@ -35,8 +35,12 @@ export function SignUp({ subtitle = "to continue to your app", onSuccess, redire
       // Immediately send the verification email
       await sendVerification(email);
       setStep("verify");
-    } catch (err: any) {
-      setError(err.message || "Failed to create account.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Failed to create account.");
+      } else {
+        setError("Failed to create account.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -95,8 +99,12 @@ export function SignUp({ subtitle = "to continue to your app", onSuccess, redire
       await verifyEmail(email, code);
       if (onSuccess) onSuccess();
       if (redirectUrl) window.location.href = redirectUrl;
-    } catch (err: any) {
-      setError(err.message || "Verification failed. Please try again.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Verification failed. Please try again.");
+      } else {
+        setError("Verification failed. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }

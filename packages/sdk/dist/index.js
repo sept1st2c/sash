@@ -75,7 +75,8 @@ var SashClient = class {
       }
     }
     if (!res.ok) {
-      const message = data.error ?? `HTTP error ${res.status}: ${res.statusText}`;
+      const parsedData = data;
+      const message = parsedData.error ?? `HTTP error ${res.status}: ${res.statusText}`;
       throw new SashApiError(message, res.status);
     }
     return data;
@@ -349,7 +350,11 @@ function SignIn({ subtitle = "to continue to your app", onSuccess, redirectUrl, 
         window.location.href = redirectUrl;
       }
     } catch (err) {
-      setError(err.message || "Failed to sign in. Please check your credentials.");
+      if (err instanceof Error) {
+        setError(err.message || "Failed to sign in. Please check your credentials.");
+      } else {
+        setError("Failed to sign in. Please check your credentials.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -433,7 +438,11 @@ function SignUp({ subtitle = "to continue to your app", onSuccess, redirectUrl }
       await sendVerification(email);
       setStep("verify");
     } catch (err) {
-      setError(err.message || "Failed to create account.");
+      if (err instanceof Error) {
+        setError(err.message || "Failed to create account.");
+      } else {
+        setError("Failed to create account.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -480,7 +489,11 @@ function SignUp({ subtitle = "to continue to your app", onSuccess, redirectUrl }
       if (onSuccess) onSuccess();
       if (redirectUrl) window.location.href = redirectUrl;
     } catch (err) {
-      setError(err.message || "Verification failed. Please try again.");
+      if (err instanceof Error) {
+        setError(err.message || "Verification failed. Please try again.");
+      } else {
+        setError("Verification failed. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -581,7 +594,11 @@ function ForgotPassword({ subtitle = "Reset your password", onSuccess, onBackToS
       await forgotPassword(email);
       setStep("reset");
     } catch (err) {
-      setError(err.message || "Failed to request reset code.");
+      if (err instanceof Error) {
+        setError(err.message || "Failed to request reset code.");
+      } else {
+        setError("Failed to request reset code.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -627,7 +644,11 @@ function ForgotPassword({ subtitle = "Reset your password", onSuccess, onBackToS
       await resetPassword(email, code, newPassword);
       if (onSuccess) onSuccess();
     } catch (err) {
-      setError(err.message || "Failed to reset password. Please check the code.");
+      if (err instanceof Error) {
+        setError(err.message || "Failed to reset password. Please check the code.");
+      } else {
+        setError("Failed to reset password. Please check the code.");
+      }
     } finally {
       setIsLoading(false);
     }

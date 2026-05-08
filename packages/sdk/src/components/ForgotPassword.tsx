@@ -33,8 +33,12 @@ export function ForgotPassword({ subtitle = "Reset your password", onSuccess, on
     try {
       await forgotPassword(email);
       setStep("reset");
-    } catch (err: any) {
-      setError(err.message || "Failed to request reset code.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Failed to request reset code.");
+      } else {
+        setError("Failed to request reset code.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -88,8 +92,12 @@ export function ForgotPassword({ subtitle = "Reset your password", onSuccess, on
     try {
       await resetPassword(email, code, newPassword);
       if (onSuccess) onSuccess();
-    } catch (err: any) {
-      setError(err.message || "Failed to reset password. Please check the code.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Failed to reset password. Please check the code.");
+      } else {
+        setError("Failed to reset password. Please check the code.");
+      }
     } finally {
       setIsLoading(false);
     }

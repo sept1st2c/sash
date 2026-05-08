@@ -77,7 +77,7 @@ export class SashClient {
 
     // Safely parse JSON to prevent "Unexpected end of JSON input" on 500s or 204s
     const text = await res.text();
-    let data: any = {};
+    let data: unknown = {};
     if (text) {
       try {
         data = JSON.parse(text);
@@ -87,8 +87,9 @@ export class SashClient {
     }
 
     if (!res.ok) {
+      const parsedData = data as { error?: string };
       const message =
-        data.error ?? `HTTP error ${res.status}: ${res.statusText}`;
+        parsedData.error ?? `HTTP error ${res.status}: ${res.statusText}`;
       throw new SashApiError(message, res.status);
     }
 

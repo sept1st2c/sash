@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSash, SignIn, SignUp, ForgotPassword } from "@septic/sdk";
+import { useSash, SignIn, SignUp, ForgotPassword } from "@sash/sdk";
 
 export default function App() {
   const { user, loading } = useSash();
@@ -35,8 +35,12 @@ function AuthenticatedView() {
       await sendVerification(user!.email);
       setSuccess("Verification email sent! Check your inbox.");
       setError("");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An error occurred");
+      }
     }
   };
 
@@ -47,8 +51,12 @@ function AuthenticatedView() {
     try {
       await verifyEmail(user!.email, code);
       setSuccess("Email verified successfully!");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An error occurred");
+      }
     } finally {
       setVerifying(false);
     }
