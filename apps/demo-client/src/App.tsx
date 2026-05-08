@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSash, SignIn, SignUp, ForgotPassword } from "@sash/sdk";
+import { useSash, SignIn, SignUp, ForgotPassword } from "@septic/sdk";
 
 export default function App() {
   const { user, loading } = useSash();
