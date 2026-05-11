@@ -22,7 +22,7 @@ export default function SdkReferencePage() {
       >
         <CodeBlock
           language="tsx"
-          code={`import { SashProvider } from "@sash/sdk";
+          code={`import { SashProvider } from "@septic/sdk";
 
 <SashProvider
   apiKey="sash_live_xxxx"
@@ -45,7 +45,7 @@ export default function SdkReferencePage() {
       >
         <CodeBlock
           language="tsx"
-          code={`import { useSash } from "@sash/sdk";
+          code={`import { useSash } from "@septic/sdk";
 
 const {
   // State
@@ -138,7 +138,7 @@ const {
       >
         <CodeBlock
           language="tsx"
-          code={`import { useSash, SashApiError } from "@sash/sdk";
+          code={`import { useSash, SashApiError } from "@septic/sdk";
 
 const { login } = useSash();
 
@@ -151,6 +151,34 @@ try {
   }
 }`}
         />
+      </DocSection>
+
+      {/* Pre-built Components */}
+      <DocSection
+        title="Drop-in UI Components"
+        description="Sash provides beautiful, pre-built components so you don't have to write any authentication forms yourself. They are built with Vanilla CSS variables and automatically inject their own styles, meaning zero setup or configuration is required!"
+      >
+        <div className="space-y-5">
+          {[
+            {
+              sig: "<SignIn subtitle=\"...\" redirectUrl=\"...\" onForgotPassword={() => ...} />",
+              desc: "A fully functional login form. Handles API requests, loading states, error surfacing, and optional redirects.",
+            },
+            {
+              sig: "<SignUp subtitle=\"...\" redirectUrl=\"...\" onSuccess={() => ...} />",
+              desc: "A multi-step signup form. Collects email and password, then automatically transitions to a 6-digit OTP verification screen before completing.",
+            },
+            {
+              sig: "<ForgotPassword subtitle=\"...\" onSuccess={() => ...} onBackToSignIn={() => ...} />",
+              desc: "A complete password reset flow. Collects the email, requests the OTP, and provides an auto-advancing 6-digit input for the user to reset their password.",
+            },
+          ].map((comp) => (
+            <div key={comp.sig} className="p-4 rounded-xl bg-[color:var(--color-bg-surface)] border border-[color:var(--color-border-subtle)]">
+              <code className="block text-[12px] font-mono text-rose-400 mb-2 break-all">{comp.sig}</code>
+              <p className="text-[13px] text-[color:var(--color-text-secondary)]">{comp.desc}</p>
+            </div>
+          ))}
+        </div>
       </DocSection>
     </div>
   );

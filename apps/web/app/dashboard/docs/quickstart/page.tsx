@@ -55,11 +55,11 @@ export default function QuickStartPage() {
       {/* Step 2 */}
       <DocSection
         title="Step 2 — Install the SDK"
-        description="Install the @sash/sdk package from npm."
+        description="Install the @septic/sdk package from npm."
       >
         <CodeBlock
           language="bash"
-          code={`npm install @sash/sdk`}
+          code={`npm install @septic/sdk`}
         />
       </DocSection>
 
@@ -71,7 +71,7 @@ export default function QuickStartPage() {
         <CodeBlock
           filename="app/layout.tsx (Next.js App Router)"
           language="tsx"
-          code={`import { SashProvider } from "@sash/sdk";
+          code={`import { SashProvider } from "@septic/sdk";
 
 export default function RootLayout({ children }) {
   return (
@@ -88,7 +88,7 @@ export default function RootLayout({ children }) {
         <CodeBlock
           filename="src/main.tsx (Vite)"
           language="tsx"
-          code={`import { SashProvider } from "@sash/sdk";
+          code={`import { SashProvider } from "@septic/sdk";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 
@@ -102,36 +102,28 @@ createRoot(document.getElementById("root")!).render(
 
       {/* Step 4 */}
       <DocSection
-        title="Step 4 — Use the useSash() hook"
-        description="In any component inside your SashProvider tree, call useSash() to access the authenticated user and auth functions."
+        title="Step 4 — Add Drop-in UI Components"
+        description="The easiest way to get started is using our pre-built, beautifully styled UI components. No Tailwind or extra CSS required — styles are injected automatically!"
       >
         <CodeBlock
-          filename="components/AuthButtons.tsx"
+          filename="components/AuthPage.tsx"
           language="tsx"
-          code={`"use client";
-import { useSash } from "@sash/sdk";
+          code={`import { SignIn, SignUp } from "@septic/sdk";
 
-export function AuthButtons() {
-  const { user, loading, login, logout, signup } = useSash();
-
-  if (loading) return <p>Loading...</p>;
-
-  if (user) {
-    return (
-      <div>
-        <p>Welcome, {user.email}!</p>
-        <button onClick={logout}>Sign out</button>
-      </div>
-    );
-  }
-
+export function AuthPage() {
   return (
-    <button onClick={() => login("you@example.com", "password")}>
-      Sign in
-    </button>
+    <div style={{ display: "flex", gap: "2rem" }}>
+      <SignIn subtitle="Sign in to your account" />
+      <SignUp subtitle="Create a new account" />
+    </div>
   );
 }`}
         />
+        <div className="mt-4">
+          <p className="text-[13px] text-[color:var(--color-text-secondary)]">
+            <strong>Prefer headless?</strong> You can also use the <code className="font-mono text-[12px] text-[color:var(--color-brand-light)]">useSash()</code> hook to access raw state (<code className="font-mono text-[12px]">user</code>, <code className="font-mono text-[12px]">loading</code>) and methods (<code className="font-mono text-[12px]">login</code>, <code className="font-mono text-[12px]">signup</code>) to build your own completely custom UI.
+          </p>
+        </div>
       </DocSection>
 
       {/* Done */}
