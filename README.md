@@ -1,4 +1,4 @@
-# Sash — Auth as a Service
+# Sash  —  Auth as a Service
 
 > Drop-in, production-ready authentication for any React application. One API key, one Provider, zero auth headaches.
 
