@@ -3,6 +3,7 @@ import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { motion } from "motion/react";
 
 function LoginForm() {
   const router = useRouter();
@@ -37,36 +38,61 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-grid bg-[color:var(--color-bg-base)]">
-      <div className="w-full max-w-[400px] bg-[color:var(--color-bg-surface)] border border-[color:var(--color-border-subtle)] rounded-3xl p-10 backdrop-blur-sm shadow-2xl">
-        <div className="text-center text-[26px] font-extrabold tracking-tight mb-2">
-          S<span className="text-[color:var(--color-brand)]">ash</span>
-        </div>
-        <p className="text-center text-sm text-[color:var(--color-text-secondary)] mb-8">
+    <div className="flex min-h-screen items-center justify-center bg-[color:var(--wise-canvas)] p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="w-full max-w-[400px] rounded-[var(--wise-radius-xl)] border border-[color:var(--wise-border)] bg-[color:var(--wise-canvas-soft)] p-10 shadow-2xl"
+      >
+        <Link
+          href="/"
+          className="mb-2 block text-center text-[26px] font-[900] tracking-tight text-[color:var(--wise-ink)] [font-family:var(--font-wise-display)]"
+        >
+          S<span className="text-[color:var(--wise-primary)]">ash</span>
+        </Link>
+        <p className="mb-8 text-center text-sm text-[color:var(--wise-body)]">
           Sign in to your dashboard
         </p>
 
         {registered && (
-          <div className="mb-5 p-3 rounded-lg text-sm font-medium bg-emerald-500/10 border border-emerald-500/20 text-emerald-500">
-            Account created! Sign in below.
+          <div
+            className="mb-5 rounded-[var(--wise-radius-md)] border p-3 text-sm font-medium"
+            style={{
+              backgroundColor: "rgba(159,232,112,0.12)",
+              borderColor: "var(--wise-border)",
+              color: "var(--wise-positive-deep)",
+            }}
+          >
+            Your account is ready. Sign in below.
           </div>
         )}
 
         {error && (
-          <div className="mb-5 p-3 rounded-lg text-sm font-medium bg-red-500/10 border border-red-500/20 text-red-500">
+          <div
+            className="mb-5 rounded-[var(--wise-radius-md)] border p-3 text-sm font-medium"
+            style={{
+              backgroundColor: "var(--wise-negative-bg)",
+              borderColor: "rgba(255,122,122,0.3)",
+              color: "var(--wise-negative)",
+            }}
+          >
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="block text-[13px] font-medium text-[color:var(--color-text-secondary)] mb-1.5" htmlFor="login-email">
+            <label
+              className="mb-1.5 block text-[13px] font-medium text-[color:var(--wise-body)]"
+              htmlFor="login-email"
+            >
               Email
             </label>
             <input
               id="login-email"
               type="email"
-              className="w-full px-3.5 py-2.5 bg-[color:var(--color-bg-subtle)] border border-[color:var(--color-border-subtle)] rounded-xl text-[14px] text-[color:var(--color-text-primary)] transition-all focus:outline-none focus:border-[color:var(--color-brand)] focus:ring-4 focus:ring-brand/20 placeholder:text-[color:var(--color-text-muted)]"
+              className="w-full rounded-[var(--wise-radius-md)] border border-[color:var(--wise-border)] bg-[color:var(--wise-canvas)] px-3.5 py-2.5 text-[14px] text-[color:var(--wise-ink)] transition-all placeholder:text-[color:var(--wise-mute)] focus:border-[color:var(--wise-primary)] focus:outline-none focus:ring-4 focus:ring-[rgba(159,232,112,0.15)]"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -76,18 +102,24 @@ function LoginForm() {
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-[13px] font-medium text-[color:var(--color-text-secondary)]" htmlFor="login-password">
+            <div className="mb-1.5 flex items-center justify-between">
+              <label
+                className="block text-[13px] font-medium text-[color:var(--wise-body)]"
+                htmlFor="login-password"
+              >
                 Password
               </label>
-              <Link href="/forgot-password" className="text-[12px] font-medium text-[color:var(--color-brand-light)] hover:underline decoration-brand/30 underline-offset-4">
+              <Link
+                href="/forgot-password"
+                className="text-[12px] font-medium text-[color:var(--wise-primary)] underline-offset-4 hover:underline"
+              >
                 Forgot password?
               </Link>
             </div>
             <input
               id="login-password"
               type="password"
-              className="w-full px-3.5 py-2.5 bg-[color:var(--color-bg-subtle)] border border-[color:var(--color-border-subtle)] rounded-xl text-[14px] text-[color:var(--color-text-primary)] transition-all focus:outline-none focus:border-[color:var(--color-brand)] focus:ring-4 focus:ring-brand/20 placeholder:text-[color:var(--color-text-muted)]"
+              className="w-full rounded-[var(--wise-radius-md)] border border-[color:var(--wise-border)] bg-[color:var(--wise-canvas)] px-3.5 py-2.5 text-[14px] text-[color:var(--wise-ink)] transition-all placeholder:text-[color:var(--wise-mute)] focus:border-[color:var(--wise-primary)] focus:outline-none focus:ring-4 focus:ring-[rgba(159,232,112,0.15)]"
               placeholder="Your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -97,22 +129,25 @@ function LoginForm() {
 
           <button
             type="submit"
-            className="mt-2 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[color:var(--color-brand)] text-white rounded-xl text-[14px] font-medium shadow-[0_0_20px_rgba(99,102,241,0.25)] hover:bg-[color:var(--color-brand-light)] hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:-translate-y-[1px] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-[var(--wise-radius-xl)] bg-[color:var(--wise-primary)] px-4 py-2.5 text-[14px] font-semibold text-[color:var(--wise-on-primary)] transition-colors hover:bg-[color:var(--wise-primary-active)] disabled:cursor-not-allowed disabled:opacity-50"
             disabled={loading}
           >
-            {loading ? "Signing in…" : "Sign In"}
+            {loading ? "Signing in…" : "Sign in"}
           </button>
         </form>
 
-        <div className="h-px bg-[color:var(--color-border-subtle)] my-6" />
+        <div className="my-6 h-px bg-[color:var(--wise-border)]" />
 
-        <p className="text-center text-[14px] text-[color:var(--color-text-secondary)]">
-          Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-[color:var(--color-brand-light)] font-medium hover:underline decoration-brand/30 underline-offset-4">
-            Create one
+        <p className="text-center text-[14px] text-[color:var(--wise-body)]">
+          New here?{" "}
+          <Link
+            href="/register"
+            className="font-medium text-[color:var(--wise-primary)] underline-offset-4 hover:underline"
+          >
+            Create an account
           </Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }

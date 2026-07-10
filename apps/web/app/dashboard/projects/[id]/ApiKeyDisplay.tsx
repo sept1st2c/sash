@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { Eye, EyeOff, Copy, Check } from "lucide-react";
 
 interface Props {
@@ -32,9 +33,9 @@ export default function ApiKeyDisplay({ apiKey, projectId }: Props) {
   const displayKey = visible ? apiKey : `${apiKey.slice(0, 12)}${"•".repeat(32)}`;
 
   return (
-    <div className="flex items-center gap-2.5">
+    <div className="flex items-center gap-2.5 min-w-0">
       <div
-        className={`flex-1 font-mono text-[13px] bg-[color:var(--color-bg-subtle)] px-3.5 py-2.5 rounded-xl border border-[color:var(--color-border-subtle)] text-[color:var(--color-brand-light)] cursor-text overflow-hidden text-ellipsis whitespace-nowrap transition-all ${visible ? 'tracking-normal' : 'tracking-widest'}`}
+        className={`flex-1 min-w-0 font-mono text-[13px] bg-[color:var(--wise-canvas)] px-3.5 py-2.5 rounded-[var(--wise-radius-md)] border border-[color:var(--wise-border)] text-[color:var(--wise-primary)] cursor-text overflow-hidden text-ellipsis whitespace-nowrap transition-all ${visible ? 'tracking-normal' : 'tracking-widest'}`}
       >
         {displayKey}
       </div>
@@ -42,7 +43,7 @@ export default function ApiKeyDisplay({ apiKey, projectId }: Props) {
       <button
         onClick={() => setVisible((v) => !v)}
         title={visible ? "Hide API key" : "Reveal API key"}
-        className="shrink-0 p-2.5 rounded-xl border border-[color:var(--color-border-subtle)] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-bg-subtle)] hover:text-[color:var(--color-text-primary)] transition-colors"
+        className="shrink-0 p-2.5 rounded-[var(--wise-radius-md)] border border-[color:var(--wise-border)] text-[color:var(--wise-body)] hover:bg-[color:var(--wise-surface-alt)] hover:text-[color:var(--wise-ink)] transition-colors"
       >
         {visible ? <EyeOff size={16} /> : <Eye size={16} />}
       </button>
@@ -50,13 +51,33 @@ export default function ApiKeyDisplay({ apiKey, projectId }: Props) {
       <button
         onClick={handleCopy}
         title="Copy API key"
-        className="shrink-0 min-w-[90px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border border-[color:var(--color-border-subtle)] text-[13px] font-medium text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-bg-subtle)] hover:text-[color:var(--color-text-primary)] transition-colors"
+        className="shrink-0 min-w-[90px] flex items-center justify-center gap-2 px-3 py-2.5 rounded-[var(--wise-radius-md)] border border-[color:var(--wise-border)] text-[13px] font-medium text-[color:var(--wise-body)] hover:bg-[color:var(--wise-surface-alt)] hover:text-[color:var(--wise-ink)] transition-colors overflow-hidden"
       >
-        {copied ? (
-          <><Check size={14} className="text-emerald-500" /> Copied</>
-        ) : (
-          <><Copy size={14} /> Copy</>
-        )}
+        <AnimatePresence mode="wait" initial={false}>
+          {copied ? (
+            <motion.span
+              key="copied"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.15 }}
+              className="flex items-center gap-2"
+            >
+              <Check size={14} className="text-[color:var(--wise-positive)]" /> Copied
+            </motion.span>
+          ) : (
+            <motion.span
+              key="copy"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.15 }}
+              className="flex items-center gap-2"
+            >
+              <Copy size={14} /> Copy
+            </motion.span>
+          )}
+        </AnimatePresence>
       </button>
     </div>
   );

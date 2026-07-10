@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { LayoutDashboard, FolderOpen, LogOut, Zap, BookOpen } from "lucide-react";
+import { LayoutDashboard, FolderOpen, LogOut, Zap, BookOpen, ExternalLink } from "lucide-react";
 
 interface Props {
   email: string;
@@ -22,11 +22,14 @@ export default function DashboardSidebar({ email }: Props) {
   }
 
   return (
-    <aside className="w-[240px] shrink-0 bg-[color:var(--color-bg-surface)] border-r border-[color:var(--color-border-subtle)] flex flex-col p-6">
+    <aside className="w-[240px] shrink-0 bg-[color:var(--wise-canvas-soft)] border-r border-[color:var(--wise-border)] flex flex-col p-6">
       {/* Logo */}
-      <div className="text-[20px] font-bold tracking-tight text-[color:var(--color-text-primary)] px-2 pb-6 border-b border-[color:var(--color-border-subtle)] mb-4">
-        S<span className="text-[color:var(--color-brand)]">ash</span>
-      </div>
+      <Link
+        href="/dashboard"
+        className="text-[20px] font-[900] tracking-tight text-[color:var(--wise-ink)] [font-family:var(--font-wise-display)] px-2 pb-6 border-b border-[color:var(--wise-border)] mb-4 block"
+      >
+        S<span className="text-[color:var(--wise-primary)]">ash</span>
+      </Link>
 
       {/* Nav */}
       <nav className="flex flex-col gap-1 flex-1">
@@ -36,10 +39,10 @@ export default function DashboardSidebar({ email }: Props) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium transition-all ${
-                active 
-                  ? "bg-[color:var(--color-brand-dim)] text-[color:var(--color-brand-light)]" 
-                  : "text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-bg-subtle)] hover:text-[color:var(--color-text-primary)]"
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-[var(--wise-radius-md)] text-[14px] font-semibold transition-all ${
+                active
+                  ? "bg-[rgba(159,232,112,0.12)] text-[color:var(--wise-primary)]"
+                  : "text-[color:var(--wise-body)] hover:bg-[color:var(--wise-surface-alt)] hover:text-[color:var(--wise-ink)]"
               }`}
             >
               <item.icon size={16} strokeWidth={2} />
@@ -50,30 +53,40 @@ export default function DashboardSidebar({ email }: Props) {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-[color:var(--color-border-subtle)] pt-4">
+      <div className="border-t border-[color:var(--wise-border)] pt-4">
         {/* Owner info */}
-        <div className="flex items-center gap-2.5 px-2 py-2 mb-1">
-          <div className="w-[30px] h-[30px] rounded-full bg-[color:var(--color-brand-dim)] flex items-center justify-center text-[13px] font-semibold text-[color:var(--color-brand-light)] shrink-0">
+        <div className="flex items-center gap-2.5 px-2 py-2 mb-1 min-w-0">
+          <div className="w-[30px] h-[30px] rounded-full bg-[rgba(159,232,112,0.12)] flex items-center justify-center text-[13px] font-semibold text-[color:var(--wise-primary)] shrink-0">
             {email[0]?.toUpperCase()}
           </div>
-          <span className="text-[13px] text-[color:var(--color-text-secondary)] overflow-hidden text-ellipsis whitespace-nowrap">
+          <span className="text-[13px] text-[color:var(--wise-body)] overflow-hidden text-ellipsis whitespace-nowrap min-w-0">
             {email}
           </span>
         </div>
 
+        <Link
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--wise-radius-md)] text-[14px] font-semibold text-[color:var(--wise-body)] hover:bg-[color:var(--wise-surface-alt)] hover:text-[color:var(--wise-ink)] transition-all"
+        >
+          <ExternalLink size={16} strokeWidth={2} />
+          View public site
+        </Link>
+
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium text-red-500 hover:bg-red-500/10 transition-all text-left"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[var(--wise-radius-md)] text-[14px] font-semibold text-[color:var(--wise-negative)] hover:bg-[color:var(--wise-negative-bg)] transition-all text-left"
         >
           <LogOut size={16} strokeWidth={2} />
-          Sign Out
+          Sign out
         </button>
       </div>
 
       {/* Version tag */}
       <div className="mt-4 px-3 flex items-center gap-1.5">
-        <Zap size={12} className="text-[color:var(--color-brand)]" />
-        <span className="text-[11px] text-[color:var(--color-text-muted)]">Sash v0.1 · Phase 5</span>
+        <Zap size={12} className="text-[color:var(--wise-primary)]" />
+        <span className="text-[11px] text-[color:var(--wise-mute)]">Sash v0.1 · Phase 5</span>
       </div>
     </aside>
   );

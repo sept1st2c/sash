@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "motion/react";
 import { Plus, X } from "lucide-react";
 
 export default function CreateProjectButton() {
@@ -25,7 +26,7 @@ export default function CreateProjectButton() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error ?? "Failed to create project.");
+        setError(data.error ?? "Couldn't create the project. Try again.");
         setLoading(false);
         return;
       }
@@ -36,7 +37,7 @@ export default function CreateProjectButton() {
       router.push(`/dashboard/projects/${data.project.id}`);
       router.refresh();
     } catch {
-      setError("Network error. Please try again.");
+      setError("Network error. Try again.");
       setLoading(false);
     }
   }
@@ -53,78 +54,88 @@ export default function CreateProjectButton() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[color:var(--color-brand)] text-white rounded-xl text-[14px] font-medium shadow-[0_0_20px_rgba(99,102,241,0.25)] hover:bg-[color:var(--color-brand-light)] hover:-translate-y-[1px] transition-all"
+        className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[color:var(--wise-primary)] text-[color:var(--wise-on-primary)] rounded-[var(--wise-radius-md)] text-[14px] font-semibold shadow-[0_0_20px_rgba(159,232,112,0.25)] hover:bg-[color:var(--wise-primary-active)] hover:-translate-y-[1px] transition-all"
       >
-        <Plus size={15} /> New Project
+        <Plus size={15} /> New project
       </button>
 
-      {open && (
-        <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200"
-          onClick={handleClose}
-        >
-          <div 
-            className="w-full max-w-[440px] bg-[color:var(--color-bg-elevated)] border border-[color:var(--color-border-bright)] rounded-3xl p-8 shadow-2xl animate-in slide-in-from-bottom-4 duration-200"
-            onClick={(e) => e.stopPropagation()}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="fixed inset-0 bg-[rgba(5,7,4,0.7)] backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={handleClose}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-[18px] font-bold text-[color:var(--color-text-primary)] m-0">Create Project</h2>
-              <button
-                onClick={handleClose}
-                className="p-1 text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text-primary)] hover:bg-[color:var(--color-bg-subtle)] rounded-lg transition-colors"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            {error && (
-              <div className="mb-4 p-3 rounded-lg text-sm font-medium bg-red-500/10 border border-red-500/20 text-red-500">
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={handleCreate} className="flex flex-col gap-4">
-              <div>
-                <label className="block text-[13px] font-medium text-[color:var(--color-text-secondary)] mb-1.5" htmlFor="project-name">
-                  Project Name
-                </label>
-                <input
-                  id="project-name"
-                  type="text"
-                  className="w-full px-3.5 py-2.5 bg-[color:var(--color-bg-subtle)] border border-[color:var(--color-border-subtle)] rounded-xl text-[14px] text-[color:var(--color-text-primary)] transition-all focus:outline-none focus:border-[color:var(--color-brand)] focus:ring-4 focus:ring-brand/20 placeholder:text-[color:var(--color-text-muted)]"
-                  placeholder="e.g. My App, Startup Dashboard..."
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  minLength={2}
-                  autoFocus
-                />
-                <p className="text-[12px] text-[color:var(--color-text-muted)] mt-1.5">
-                  A unique API key will be generated automatically.
-                </p>
-              </div>
-
-              <div className="flex justify-end gap-2.5 mt-2">
+            <motion.div
+              className="w-full max-w-[440px] bg-[color:var(--wise-canvas-soft)] border border-[color:var(--wise-border)] rounded-[var(--wise-radius-xl)] p-8"
+              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.98 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-[18px] font-bold text-[color:var(--wise-ink)] m-0">New project</h2>
                 <button
-                  type="button"
-                  className="px-4 py-2 rounded-xl text-[14px] font-medium text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-bg-subtle)] hover:text-[color:var(--color-text-primary)] transition-colors disabled:opacity-50"
                   onClick={handleClose}
-                  disabled={loading}
+                  className="p-1 text-[color:var(--wise-mute)] hover:text-[color:var(--wise-ink)] hover:bg-[color:var(--wise-surface-alt)] rounded-lg transition-colors"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-[color:var(--color-brand)] text-white rounded-xl text-[14px] font-medium hover:bg-[color:var(--color-brand-light)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={loading || name.trim().length < 2}
-                >
-                  {loading ? "Creating…" : "Create Project"}
+                  <X size={18} />
                 </button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+
+              {error && (
+                <div className="mb-4 p-3 rounded-lg text-sm font-medium bg-[color:var(--wise-negative-bg)] border border-[rgba(255,122,122,0.3)] text-[color:var(--wise-negative)]">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleCreate} className="flex flex-col gap-4">
+                <div>
+                  <label className="block text-[13px] font-medium text-[color:var(--wise-body)] mb-1.5" htmlFor="project-name">
+                    Project name
+                  </label>
+                  <input
+                    id="project-name"
+                    type="text"
+                    className="w-full px-3.5 py-2.5 bg-[color:var(--wise-canvas)] border border-[color:var(--wise-border)] rounded-[var(--wise-radius-md)] text-[14px] text-[color:var(--wise-ink)] transition-all focus:outline-none focus:border-[color:var(--wise-primary)] focus:ring-4 focus:ring-[rgba(159,232,112,0.2)] placeholder:text-[color:var(--wise-mute)]"
+                    placeholder="e.g. My App, Startup Dashboard"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    minLength={2}
+                    autoFocus
+                  />
+                  <p className="text-[12px] text-[color:var(--wise-mute)] mt-1.5">
+                    We&apos;ll generate a unique API key for it right away.
+                  </p>
+                </div>
+
+                <div className="flex justify-end gap-2.5 mt-2">
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded-[var(--wise-radius-md)] text-[14px] font-medium text-[color:var(--wise-body)] hover:bg-[color:var(--wise-surface-alt)] hover:text-[color:var(--wise-ink)] transition-colors disabled:opacity-50"
+                    onClick={handleClose}
+                    disabled={loading}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-[color:var(--wise-primary)] text-[color:var(--wise-on-primary)] rounded-[var(--wise-radius-md)] text-[14px] font-semibold hover:bg-[color:var(--wise-primary-active)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={loading || name.trim().length < 2}
+                  >
+                    {loading ? "Creating…" : "Create project"}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

@@ -1,30 +1,63 @@
+"use client";
+import { motion, type Variants } from "motion/react";
 import { DocSection } from "../_components/DocSection";
 import { CodeBlock } from "../_components/CodeBlock";
 
 const events = [
   { name: "user.signup", description: "Fired when a new user successfully creates an account.", payload: `{ "id": "user_123", "email": "user@example.com" }` },
   { name: "user.login", description: "Fired when a user successfully logs in.", payload: `{ "id": "user_123", "email": "user@example.com" }` },
-  { name: "user.verified", description: "Fired when a user verifies their email address via OTP.", payload: `{ "id": "user_123", "email": "user@example.com" }` },
-  { name: "user.password-reset", description: "Fired when a user successfully resets their password. All sessions are invalidated at this point.", payload: `{ "id": "user_123", "email": "user@example.com" }` },
+  { name: "user.email_verified", description: "Fired when a user verifies their email address via OTP.", payload: `{ "id": "user_123", "email": "user@example.com" }` },
+  { name: "user.password_reset", description: "Fired when a user successfully resets their password. All sessions are invalidated at this point.", payload: `{ "id": "user_123", "email": "user@example.com" }` },
 ];
+
+const securityChecklist = [
+  "Always verify the X-Sash-Signature before processing any event.",
+  "Use crypto.timingSafeEqual, not ===, to prevent timing side-channel attacks.",
+  "Store your WEBHOOK_SIGNING_SECRET in an environment variable, never hardcode it.",
+  "Sash waits up to 10 seconds for your endpoint to respond, then gives up. There's no retry yet, so a dropped delivery is gone for good.",
+  "Treat webhooks as fire and forget on our end, and handle duplicate deliveries idempotently on yours.",
+];
+
+const container: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+
+const rise: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
+};
 
 export default function WebhooksPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8 pb-6 border-b border-[color:var(--color-border-subtle)]">
-        <p className="text-[12px] font-semibold text-[color:var(--color-brand-light)] uppercase tracking-wider mb-2">Security</p>
-        <h1 className="text-[24px] font-bold tracking-tight text-[color:var(--color-text-primary)] mb-2">Webhooks</h1>
-        <p className="text-[14px] text-[color:var(--color-text-secondary)]">
-          Sash fires HTTP POST events to your configured webhook URL whenever a key auth event occurs.
-          Each request is signed with HMAC-SHA256 so you can verify it truly came from Sash.
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mb-8 pb-6 border-b"
+        style={{ borderColor: "var(--wise-border)" }}
+      >
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] mb-2" style={{ color: "var(--wise-positive-deep)" }}>
+          Security
         </p>
-      </div>
+        <h1
+          className="text-[26px] md:text-[30px] tracking-tight mb-2"
+          style={{ fontFamily: "var(--font-wise-display)", fontWeight: 900, color: "var(--wise-ink)" }}
+        >
+          Webhooks
+        </h1>
+        <p className="max-w-xl text-[14px] leading-relaxed" style={{ color: "var(--wise-body)" }}>
+          Sash sends an HTTP POST to your configured webhook URL whenever a key auth event happens.
+          Each request is signed with HMAC-SHA256, so you can verify it actually came from Sash.
+        </p>
+      </motion.div>
 
       {/* Payload Shape */}
       <DocSection
         title="Webhook Payload Shape"
-        description="Every webhook POST request has the same JSON envelope."
+        description="Every webhook POST request uses the same JSON envelope."
       >
         <CodeBlock
           language="json"
@@ -32,7 +65,7 @@ export default function WebhooksPage() {
   "event": "user.signup",
   "projectId": "project_abc123",
   "timestamp": "2026-04-30T01:00:00.000Z",
-  "data": {
+  "user": {
     "id": "user_xyz",
     "email": "user@example.com"
   }
@@ -42,22 +75,33 @@ export default function WebhooksPage() {
 
       {/* Events */}
       <DocSection title="Event Types" description="Sash fires the following events:">
-        <div className="space-y-3">
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.1 }}
+          className="space-y-3"
+        >
           {events.map((ev) => (
-            <div key={ev.name} className="p-4 rounded-xl bg-[color:var(--color-bg-surface)] border border-[color:var(--color-border-subtle)]">
-              <code className="block text-[13px] font-mono text-[color:var(--color-brand-light)] mb-1">{ev.name}</code>
-              <p className="text-[13px] text-[color:var(--color-text-secondary)] mb-2">{ev.description}</p>
-              <p className="text-[11px] font-semibold text-[color:var(--color-text-muted)] uppercase tracking-wider mb-1">data payload</p>
+            <motion.div
+              key={ev.name}
+              variants={rise}
+              className="p-4 rounded-[var(--wise-radius-lg)]"
+              style={{ backgroundColor: "var(--wise-canvas-soft)", border: "1px solid var(--wise-border)" }}
+            >
+              <code className="block text-[13px] font-mono mb-1" style={{ color: "var(--wise-primary)" }}>{ev.name}</code>
+              <p className="text-[13px] mb-2" style={{ color: "var(--wise-body)" }}>{ev.description}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wider mb-1" style={{ color: "var(--wise-mute)" }}>data payload</p>
               <CodeBlock language="json" code={ev.payload} />
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </DocSection>
 
       {/* Signature */}
       <DocSection
         title="Verifying the Signature"
-        description="Every webhook request includes an X-Sash-Signature header. This is an HMAC-SHA256 hex digest of the raw JSON body, signed with your WEBHOOK_SIGNING_SECRET. Always verify this before processing the event."
+        description="Every webhook request includes an X-Sash-Signature header: an HMAC-SHA256 hex digest of the raw JSON body, signed with your WEBHOOK_SIGNING_SECRET. Always verify this before processing the event."
       >
         <CodeBlock
           filename="Your backend (Node.js example)"
@@ -100,11 +144,11 @@ export async function POST(req: Request) {
     case "user.signup":
       // e.g. send a welcome email
       break;
-    case "user.verified":
+    case "user.email_verified":
       // e.g. unlock premium features
       break;
-    case "user.password-reset":
-      // e.g. alert user of reset via separate channel
+    case "user.password_reset":
+      // e.g. alert the user via a separate channel
       break;
   }
 
@@ -114,21 +158,22 @@ export async function POST(req: Request) {
       </DocSection>
 
       {/* Security notes */}
-      <div className="rounded-[16px] bg-rose-400/5 border border-rose-400/20 p-6 space-y-2">
-        <p className="text-[14px] font-semibold text-[color:var(--color-text-primary)]">🔐 Security Checklist</p>
-        {[
-          "Always verify the X-Sash-Signature before processing any event.",
-          "Use crypto.timingSafeEqual (not ===) to prevent timing side-channel attacks.",
-          "Store your WEBHOOK_SIGNING_SECRET in an environment variable — never hardcode it.",
-          "Return HTTP 200 quickly (within 5s) — Sash will retry on failure.",
-          "Treat webhooks as fire-and-forget — idempotently handle duplicate deliveries.",
-        ].map((item) => (
-          <div key={item} className="flex items-start gap-2.5 text-[13px] text-[color:var(--color-text-secondary)]">
-            <span className="text-rose-400 shrink-0 mt-0.5">•</span>
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.4 }}
+        className="rounded-[var(--wise-radius-lg)] p-6 space-y-2"
+        style={{ backgroundColor: "rgba(255,122,122,0.05)", border: "1px solid var(--wise-negative-bg)" }}
+      >
+        <p className="text-[14px] font-semibold" style={{ color: "var(--wise-ink)" }}>Security checklist</p>
+        {securityChecklist.map((item) => (
+          <div key={item} className="flex items-start gap-2.5 text-[13px]" style={{ color: "var(--wise-body)" }}>
+            <span className="shrink-0 mt-0.5" style={{ color: "var(--wise-negative)" }}>•</span>
             {item}
           </div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }

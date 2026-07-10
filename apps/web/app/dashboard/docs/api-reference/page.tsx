@@ -1,3 +1,5 @@
+"use client";
+import { motion, type Variants } from "motion/react";
 import { DocSection } from "../_components/DocSection";
 import { CodeBlock } from "../_components/CodeBlock";
 
@@ -51,7 +53,7 @@ const endpoints = [
   {
     method: "POST",
     path: "/api/v1/send-verification",
-    description: "Send a 6-digit OTP to the user's email for email verification. Code is valid for 10 minutes.",
+    description: "Send a 6-digit OTP to the user's email for email verification. The code is valid for 10 minutes.",
     body: `{ "email": "user@example.com" }`,
     success: `200 { "message": "Verification email sent." }`,
     errors: [
@@ -96,23 +98,48 @@ const endpoints = [
 ];
 
 const methodColor: Record<string, string> = {
-  GET: "text-emerald-400 bg-emerald-400/10",
-  POST: "text-[color:var(--color-brand-light)] bg-[color:var(--color-brand-dim)]",
-  DELETE: "text-red-400 bg-red-400/10",
+  GET: "var(--wise-accent-cyan)",
+  POST: "var(--wise-primary)",
+  DELETE: "var(--wise-negative)",
+};
+
+const container: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+
+const rise: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
 export default function ApiReferencePage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8 pb-6 border-b border-[color:var(--color-border-subtle)]">
-        <p className="text-[12px] font-semibold text-[color:var(--color-brand-light)] uppercase tracking-wider mb-2">API Reference</p>
-        <h1 className="text-[24px] font-bold tracking-tight text-[color:var(--color-text-primary)] mb-2">All Endpoints</h1>
-        <p className="text-[14px] text-[color:var(--color-text-secondary)]">
-          All requests require the <code className="font-mono text-[13px] text-amber-400">Authorization: Bearer &lt;api_key&gt;</code> header unless noted.
-          Session-authenticated endpoints (like <code className="font-mono text-[13px]">/me</code>) also require the session cookie.
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mb-8 pb-6 border-b"
+        style={{ borderColor: "var(--wise-border)" }}
+      >
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] mb-2" style={{ color: "var(--wise-positive-deep)" }}>
+          API Reference
         </p>
-      </div>
+        <h1
+          className="text-[26px] md:text-[30px] tracking-tight mb-2"
+          style={{ fontFamily: "var(--font-wise-display)", fontWeight: 900, color: "var(--wise-ink)" }}
+        >
+          All Endpoints
+        </h1>
+        <p className="max-w-xl text-[14px] leading-relaxed" style={{ color: "var(--wise-body)" }}>
+          Every request needs an{" "}
+          <code className="font-mono text-[13px]" style={{ color: "var(--wise-warning)" }}>Authorization: Bearer &lt;api_key&gt;</code> header
+          unless noted. Session-authenticated endpoints (like{" "}
+          <code className="font-mono text-[13px]">/me</code>) also need the session cookie.
+        </p>
+      </motion.div>
 
       <DocSection title="Authentication Header">
         <CodeBlock
@@ -125,52 +152,69 @@ export default function ApiReferencePage() {
       </DocSection>
 
       {/* Endpoints */}
-      <div className="space-y-6 mt-2">
+      <motion.div
+        variants={container}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.05 }}
+        className="space-y-6 mt-2"
+      >
         {endpoints.map((ep) => (
-          <div
+          <motion.div
             key={ep.path}
-            className="rounded-[16px] bg-[color:var(--color-bg-surface)] border border-[color:var(--color-border-subtle)] overflow-hidden shadow-sm"
+            variants={rise}
+            className="rounded-[var(--wise-radius-lg)] overflow-hidden"
+            style={{ backgroundColor: "var(--wise-canvas-soft)", border: "1px solid var(--wise-border)" }}
           >
             {/* Endpoint header */}
-            <div className="flex items-center gap-3 px-5 py-4 border-b border-[color:var(--color-border-subtle)]">
-              <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg font-mono ${methodColor[ep.method] ?? "text-white bg-white/10"}`}>
+            <div
+              className="flex items-center gap-3 px-5 py-4 border-b"
+              style={{ borderColor: "var(--wise-border)" }}
+            >
+              <span
+                className="text-[11px] font-bold px-2.5 py-1 rounded-[var(--wise-radius-md)] font-mono"
+                style={{
+                  color: "var(--wise-on-primary)",
+                  backgroundColor: methodColor[ep.method] ?? "var(--wise-mute)",
+                }}
+              >
                 {ep.method}
               </span>
-              <code className="text-[14px] font-mono text-[color:var(--color-text-primary)]">{ep.path}</code>
+              <code className="text-[14px] font-mono" style={{ color: "var(--wise-ink)" }}>{ep.path}</code>
             </div>
 
             <div className="p-5 space-y-4">
-              <p className="text-[13px] text-[color:var(--color-text-secondary)]">{ep.description}</p>
+              <p className="text-[13px] leading-relaxed" style={{ color: "var(--wise-body)" }}>{ep.description}</p>
 
               {ep.body && (
                 <div>
-                  <p className="text-[11px] font-semibold text-[color:var(--color-text-muted)] uppercase tracking-wider mb-1.5">Request Body</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider mb-1.5" style={{ color: "var(--wise-mute)" }}>Request Body</p>
                   <CodeBlock language="json" code={ep.body} />
                 </div>
               )}
 
               <div>
-                <p className="text-[11px] font-semibold text-[color:var(--color-text-muted)] uppercase tracking-wider mb-1.5">Success Response</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wider mb-1.5" style={{ color: "var(--wise-mute)" }}>Success Response</p>
                 <CodeBlock language="json" code={ep.success} />
               </div>
 
               {ep.errors.length > 0 && (
                 <div>
-                  <p className="text-[11px] font-semibold text-[color:var(--color-text-muted)] uppercase tracking-wider mb-2">Error Codes</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--wise-mute)" }}>Error Codes</p>
                   <div className="space-y-1.5">
                     {ep.errors.map((err) => (
                       <div key={err.code} className="flex items-start gap-3 text-[13px]">
-                        <code className="font-mono text-red-400 w-8 shrink-0">{err.code}</code>
-                        <span className="text-[color:var(--color-text-secondary)]">{err.desc}</span>
+                        <code className="font-mono w-8 shrink-0" style={{ color: "var(--wise-negative)" }}>{err.code}</code>
+                        <span style={{ color: "var(--wise-body)" }}>{err.desc}</span>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }

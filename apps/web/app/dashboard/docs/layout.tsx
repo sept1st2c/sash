@@ -43,16 +43,16 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
       {/* Docs sidebar */}
       <aside className="w-[220px] shrink-0 sticky top-0 self-start pt-1">
         <div className="flex items-center gap-2 mb-6 px-1">
-          <BookOpen size={15} className="text-[color:var(--color-brand-light)]" />
-          <span className="text-[13px] font-semibold text-[color:var(--color-text-primary)]">Documentation</span>
+          <BookOpen size={15} style={{ color: "var(--wise-primary)" }} />
+          <span className="text-[13px] font-semibold" style={{ color: "var(--wise-ink)" }}>Documentation</span>
         </div>
 
         <nav className="flex flex-col gap-5">
           {docNav.map((section) => (
             <div key={section.category}>
               <div className="flex items-center gap-1.5 px-1 mb-1.5">
-                <section.icon size={11} className="text-[color:var(--color-text-muted)]" />
-                <span className="text-[11px] font-semibold text-[color:var(--color-text-muted)] uppercase tracking-wider">
+                <section.icon size={11} style={{ color: "var(--wise-mute)" }} />
+                <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--wise-mute)" }}>
                   {section.category}
                 </span>
               </div>
@@ -63,10 +63,10 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
                     <Link
                       key={link.href}
                       href={link.href}
-                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-[13px] transition-all ${
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-[var(--wise-radius-md)] text-[13px] transition-all ${
                         active
-                          ? "bg-[color:var(--color-brand-dim)] text-[color:var(--color-brand-light)] font-medium"
-                          : "text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-bg-subtle)] hover:text-[color:var(--color-text-primary)]"
+                          ? "bg-[rgba(159,232,112,0.12)] text-[color:var(--wise-primary)] font-medium"
+                          : "text-[color:var(--wise-body)] hover:bg-[color:var(--wise-surface-alt)] hover:text-[color:var(--wise-ink)]"
                       }`}
                     >
                       {active && <ChevronRight size={11} />}

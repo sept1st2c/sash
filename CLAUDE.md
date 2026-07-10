@@ -16,6 +16,12 @@ These two user types live in completely separate database models and are authent
 
 ---
 
+## Before Writing Any Next.js Code
+
+`apps/web` runs **Next.js 16** (`apps/web/AGENTS.md`, pulled in via `apps/web/CLAUDE.md`), not Next.js 15. Training-data assumptions about App Router APIs, conventions, or file structure may be stale — check `node_modules/next/dist/docs/` in that workspace for the current API before using anything unfamiliar-looking (route handler signatures, config options, etc.), and heed any deprecation notices you encounter.
+
+---
+
 ## Commands
 
 ### Running Locally
@@ -244,7 +250,7 @@ On mount, `<SashProvider>` calls `GET /api/v1/me` to silently restore the sessio
 
 ## Environment Variables
 
-All vars live in `apps/web/.env`:
+All vars live in `apps/web/.env` (see `apps/web/.env.example` for the template):
 
 ```env
 DATABASE_URL=postgresql://...

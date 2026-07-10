@@ -2,6 +2,8 @@
 
 import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { motion } from "motion/react";
 import { resetAdminPassword } from "./actions";
 
 function ResetPasswordForm() {
@@ -29,38 +31,60 @@ function ResetPasswordForm() {
         router.push("/login?reset=success");
       }
     } catch (err) {
-      setError("An unexpected error occurred.");
+      setError("Something went wrong. Try again.");
       setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-grid bg-[color:var(--color-bg-base)]">
-      <div className="w-full max-w-[400px] bg-[color:var(--color-bg-surface)] border border-[color:var(--color-border-subtle)] rounded-3xl p-10 backdrop-blur-sm shadow-2xl">
-        <div className="text-center text-[26px] font-extrabold tracking-tight mb-2">
+    <div className="flex min-h-screen items-center justify-center bg-[color:var(--wise-canvas)] p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="w-full max-w-[400px] rounded-[var(--wise-radius-xl)] border border-[color:var(--wise-border)] bg-[color:var(--wise-canvas-soft)] p-10 shadow-2xl"
+      >
+        <Link
+          href="/"
+          className="mb-2 block text-center text-[15px] font-[900] tracking-tight text-[color:var(--wise-ink)] [font-family:var(--font-wise-display)]"
+        >
+          S<span className="text-[color:var(--wise-primary)]">ash</span>
+        </Link>
+
+        <div className="mb-2 text-center text-[26px] font-[900] tracking-tight text-[color:var(--wise-ink)] [font-family:var(--font-wise-display)]">
           Check your email
         </div>
-        <p className="text-center text-sm text-[color:var(--color-text-secondary)] mb-8">
-          We sent a 6-digit code to <strong>{email}</strong>
+        <p className="mb-8 break-words text-center text-sm text-[color:var(--wise-body)]">
+          We sent a 6-digit code to <strong className="text-[color:var(--wise-ink)]">{email}</strong>
         </p>
 
         {error && (
-          <div className="mb-5 p-3 rounded-lg text-sm font-medium bg-red-500/10 border border-red-500/20 text-red-500">
+          <div
+            className="mb-5 rounded-[var(--wise-radius-md)] border p-3 text-sm font-medium"
+            style={{
+              backgroundColor: "var(--wise-negative-bg)",
+              borderColor: "rgba(255,122,122,0.3)",
+              color: "var(--wise-negative)",
+            }}
+          >
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="block text-[13px] font-medium text-[color:var(--color-text-secondary)] mb-1.5" htmlFor="reset-code">
-              6-Digit Code
+            <label
+              className="mb-1.5 block text-[13px] font-medium text-[color:var(--wise-body)]"
+              htmlFor="reset-code"
+            >
+              6-digit code
             </label>
             <input
               id="reset-code"
               type="text"
               inputMode="numeric"
               maxLength={6}
-              className="w-full px-3.5 py-2.5 bg-[color:var(--color-bg-subtle)] border border-[color:var(--color-border-subtle)] rounded-xl text-[14px] text-[color:var(--color-text-primary)] transition-all focus:outline-none focus:border-[color:var(--color-brand)] focus:ring-4 focus:ring-brand/20 placeholder:text-[color:var(--color-text-muted)] text-center tracking-[0.5em] font-mono"
+              className="w-full rounded-[var(--wise-radius-md)] border border-[color:var(--wise-border)] bg-[color:var(--wise-canvas)] px-3.5 py-2.5 text-center font-mono text-[14px] tracking-[0.5em] text-[color:var(--wise-ink)] transition-all placeholder:text-[color:var(--wise-mute)] focus:border-[color:var(--wise-primary)] focus:outline-none focus:ring-4 focus:ring-[rgba(159,232,112,0.15)]"
               placeholder="000000"
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
@@ -70,13 +94,16 @@ function ResetPasswordForm() {
           </div>
 
           <div>
-            <label className="block text-[13px] font-medium text-[color:var(--color-text-secondary)] mb-1.5" htmlFor="reset-password">
-              New Password
+            <label
+              className="mb-1.5 block text-[13px] font-medium text-[color:var(--wise-body)]"
+              htmlFor="reset-password"
+            >
+              New password
             </label>
             <input
               id="reset-password"
               type="password"
-              className="w-full px-3.5 py-2.5 bg-[color:var(--color-bg-subtle)] border border-[color:var(--color-border-subtle)] rounded-xl text-[14px] text-[color:var(--color-text-primary)] transition-all focus:outline-none focus:border-[color:var(--color-brand)] focus:ring-4 focus:ring-brand/20 placeholder:text-[color:var(--color-text-muted)]"
+              className="w-full rounded-[var(--wise-radius-md)] border border-[color:var(--wise-border)] bg-[color:var(--wise-canvas)] px-3.5 py-2.5 text-[14px] text-[color:var(--wise-ink)] transition-all placeholder:text-[color:var(--wise-mute)] focus:border-[color:var(--wise-primary)] focus:outline-none focus:ring-4 focus:ring-[rgba(159,232,112,0.15)]"
               placeholder="Must be at least 8 characters"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
@@ -86,13 +113,13 @@ function ResetPasswordForm() {
 
           <button
             type="submit"
-            className="mt-2 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[color:var(--color-brand)] text-white rounded-xl text-[14px] font-medium shadow-[0_0_20px_rgba(99,102,241,0.25)] hover:bg-[color:var(--color-brand-light)] hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:-translate-y-[1px] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-[var(--wise-radius-xl)] bg-[color:var(--wise-primary)] px-4 py-2.5 text-[14px] font-semibold text-[color:var(--wise-on-primary)] transition-colors hover:bg-[color:var(--wise-primary-active)] disabled:cursor-not-allowed disabled:opacity-50"
             disabled={loading || code.length !== 6 || newPassword.length < 8}
           >
-            {loading ? "Saving..." : "Save New Password"}
+            {loading ? "Saving…" : "Save new password"}
           </button>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -1,42 +1,75 @@
+"use client";
+import { motion, type Variants } from "motion/react";
 import { DocSection } from "../_components/DocSection";
 import { CodeBlock } from "../_components/CodeBlock";
 import { Terminal, Package, Code2, CheckCircle2 } from "lucide-react";
 
 const steps = [
-  { icon: Package, label: "Install the SDK", color: "text-amber-400", bg: "bg-amber-400/10" },
-  { icon: Code2, label: "Add the Provider", color: "text-[color:var(--color-brand-light)]", bg: "bg-[color:var(--color-brand-dim)]" },
-  { icon: Terminal, label: "Use the Hook", color: "text-emerald-400", bg: "bg-emerald-400/10" },
-  { icon: CheckCircle2, label: "You're live!", color: "text-rose-400", bg: "bg-rose-400/10" },
+  { icon: Package, label: "Install the SDK", color: "var(--wise-warning)" },
+  { icon: Code2, label: "Add the Provider", color: "var(--wise-primary)" },
+  { icon: Terminal, label: "Use the Hook", color: "var(--wise-accent-cyan)" },
+  { icon: CheckCircle2, label: "You're live", color: "var(--wise-positive)" },
 ];
+
+const container: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06 } },
+};
+
+const rise: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
+};
 
 export default function QuickStartPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8 pb-6 border-b border-[color:var(--color-border-subtle)]">
-        <p className="text-[12px] font-semibold text-[color:var(--color-brand-light)] uppercase tracking-wider mb-2">Getting Started</p>
-        <h1 className="text-[24px] font-bold tracking-tight text-[color:var(--color-text-primary)] mb-2">Quick Start</h1>
-        <p className="text-[14px] text-[color:var(--color-text-secondary)]">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mb-8 pb-6 border-b"
+        style={{ borderColor: "var(--wise-border)" }}
+      >
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] mb-2" style={{ color: "var(--wise-positive-deep)" }}>
+          Getting Started
+        </p>
+        <h1
+          className="text-[26px] md:text-[30px] tracking-tight mb-2"
+          style={{ fontFamily: "var(--font-wise-display)", fontWeight: 900, color: "var(--wise-ink)" }}
+        >
+          Quick Start
+        </h1>
+        <p className="max-w-xl text-[14px] leading-relaxed" style={{ color: "var(--wise-body)" }}>
           Add Sash authentication to your React app in under 5 minutes.
         </p>
-      </div>
+      </motion.div>
 
       {/* Steps progress bar */}
-      <div className="flex items-center gap-3 mb-10 flex-wrap">
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="flex items-center gap-3 mb-10 flex-wrap"
+      >
         {steps.map((s, i) => (
-          <div key={s.label} className="flex items-center gap-2">
-            <div className={`w-7 h-7 rounded-lg ${s.bg} flex items-center justify-center shrink-0`}>
-              <s.icon size={14} className={s.color} />
+          <motion.div key={s.label} variants={rise} className="flex items-center gap-2">
+            <div
+              className="w-7 h-7 rounded-[var(--wise-radius-sm)] flex items-center justify-center shrink-0"
+              style={{ backgroundColor: "rgba(159,232,112,0.12)" }}
+            >
+              <s.icon size={14} style={{ color: s.color }} />
             </div>
-            <span className="text-[13px] text-[color:var(--color-text-secondary)] font-medium">{s.label}</span>
-            {i < steps.length - 1 && <span className="text-[color:var(--color-border-subtle)] mx-1">›</span>}
-          </div>
+            <span className="text-[13px] font-medium" style={{ color: "var(--wise-body)" }}>{s.label}</span>
+            {i < steps.length - 1 && <span className="mx-1" style={{ color: "var(--wise-border)" }}>›</span>}
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* Step 1 */}
       <DocSection
-        title="Step 1 — Get your API Key"
+        title="Step 1: Get your API key"
         description="Every Sash project has a unique API key. Open your project in the dashboard, copy the key, and add it to your environment variables. Never commit it to source control."
       >
         <CodeBlock
@@ -44,17 +77,22 @@ export default function QuickStartPage() {
           language="env"
           code={`NEXT_PUBLIC_SASH_API_KEY=sash_live_xxxxxxxxxxxxxxxxxxxx`}
         />
-        <div className="flex items-start gap-2.5 p-4 rounded-xl bg-amber-400/5 border border-amber-400/20 mt-2">
-          <span className="text-amber-400 text-[13px] mt-0.5">⚠</span>
-          <p className="text-[13px] text-[color:var(--color-text-secondary)]">
-            Use <code className="font-mono text-[12px] text-amber-400">NEXT_PUBLIC_</code> prefix only for keys you intentionally expose to the browser. If you use the SDK client-side, this is required. Never expose the key server-side only.
+        <div
+          className="flex items-start gap-2.5 p-4 rounded-[var(--wise-radius-lg)] mt-2"
+          style={{ backgroundColor: "rgba(255,209,26,0.06)", border: "1px solid rgba(255,209,26,0.2)" }}
+        >
+          <span className="text-[13px] mt-0.5" style={{ color: "var(--wise-warning)" }}>⚠</span>
+          <p className="text-[13px] leading-relaxed" style={{ color: "var(--wise-body)" }}>
+            Only use the <code className="font-mono text-[12px]" style={{ color: "var(--wise-warning)" }}>NEXT_PUBLIC_</code> prefix
+            for keys you intentionally expose to the browser. If you&apos;re calling the SDK client-side, this prefix is required,
+            so don&apos;t keep it server-only.
           </p>
         </div>
       </DocSection>
 
       {/* Step 2 */}
       <DocSection
-        title="Step 2 — Install the SDK"
+        title="Step 2: Install the SDK"
         description="Install the @septic/sdk package from npm."
       >
         <CodeBlock
@@ -65,8 +103,8 @@ export default function QuickStartPage() {
 
       {/* Step 3 */}
       <DocSection
-        title="Step 3 — Wrap your app with SashProvider"
-        description="Place SashProvider at the root of your component tree. In Next.js App Router, this goes in your root layout. In Vite/CRA, this goes in main.tsx."
+        title="Step 3: Wrap your app with SashProvider"
+        description="Place SashProvider at the root of your component tree. In Next.js App Router, that's your root layout. In Vite or CRA, that's main.tsx."
       >
         <CodeBlock
           filename="app/layout.tsx (Next.js App Router)"
@@ -102,8 +140,8 @@ createRoot(document.getElementById("root")!).render(
 
       {/* Step 4 */}
       <DocSection
-        title="Step 4 — Add Drop-in UI Components"
-        description="The easiest way to get started is using our pre-built, beautifully styled UI components. No Tailwind or extra CSS required — styles are injected automatically!"
+        title="Step 4: Add drop-in UI components"
+        description="The fastest way to get started is with our pre-built, styled UI components. No Tailwind or extra CSS needed, styles are injected automatically."
       >
         <CodeBlock
           filename="components/AuthPage.tsx"
@@ -120,22 +158,36 @@ export function AuthPage() {
 }`}
         />
         <div className="mt-4">
-          <p className="text-[13px] text-[color:var(--color-text-secondary)]">
-            <strong>Prefer headless?</strong> You can also use the <code className="font-mono text-[12px] text-[color:var(--color-brand-light)]">useSash()</code> hook to access raw state (<code className="font-mono text-[12px]">user</code>, <code className="font-mono text-[12px]">loading</code>) and methods (<code className="font-mono text-[12px]">login</code>, <code className="font-mono text-[12px]">signup</code>) to build your own completely custom UI.
+          <p className="text-[13px] leading-relaxed" style={{ color: "var(--wise-body)" }}>
+            <strong style={{ color: "var(--wise-ink)" }}>Prefer headless?</strong> Use the{" "}
+            <code className="font-mono text-[12px]" style={{ color: "var(--wise-primary)" }}>useSash()</code> hook to
+            access raw state (<code className="font-mono text-[12px]">user</code>,{" "}
+            <code className="font-mono text-[12px]">loading</code>) and methods (
+            <code className="font-mono text-[12px]">login</code>,{" "}
+            <code className="font-mono text-[12px]">signup</code>) and build your own UI on top.
           </p>
         </div>
       </DocSection>
 
       {/* Done */}
-      <div className="rounded-[16px] bg-emerald-400/5 border border-emerald-400/20 p-6 flex items-start gap-4">
-        <CheckCircle2 size={20} className="text-emerald-400 shrink-0 mt-0.5" />
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.4 }}
+        className="rounded-[var(--wise-radius-lg)] p-6 flex items-start gap-4"
+        style={{ backgroundColor: "rgba(159,232,112,0.06)", border: "1px solid var(--wise-border)" }}
+      >
+        <CheckCircle2 size={20} className="shrink-0 mt-0.5" style={{ color: "var(--wise-positive)" }} />
         <div>
-          <p className="text-[14px] font-semibold text-[color:var(--color-text-primary)] mb-1">You're all set!</p>
-          <p className="text-[13px] text-[color:var(--color-text-secondary)]">
-            Your app now has full authentication powered by Sash. Check the <strong>SDK Reference</strong> for the complete list of functions, or the <strong>API Reference</strong> if you're integrating without React.
+          <p className="text-[14px] font-semibold mb-1" style={{ color: "var(--wise-ink)" }}>You&apos;re all set</p>
+          <p className="text-[13px] leading-relaxed" style={{ color: "var(--wise-body)" }}>
+            Your app now has full authentication powered by Sash. Check the <strong style={{ color: "var(--wise-ink)" }}>SDK Reference</strong> for
+            the complete list of functions, or the <strong style={{ color: "var(--wise-ink)" }}>API Reference</strong> if you&apos;re
+            integrating without React.
           </p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

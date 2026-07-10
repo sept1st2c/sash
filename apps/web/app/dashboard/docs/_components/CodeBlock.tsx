@@ -18,26 +18,54 @@ export function CodeBlock({ code, language = "bash", filename }: CodeBlockProps)
   };
 
   return (
-    <div className="relative group rounded-xl overflow-hidden border border-[color:var(--color-border-subtle)] my-4">
-      {/* Header */}
-      {filename && (
-        <div className="flex items-center justify-between px-4 py-2 bg-[color:var(--color-bg-page)] border-b border-[color:var(--color-border-subtle)]">
-          <span className="text-[12px] text-[color:var(--color-text-muted)] font-mono">{filename}</span>
-          <span className="text-[11px] text-[color:var(--color-text-muted)] uppercase tracking-wider">{language}</span>
-        </div>
-      )}
+    <div
+      className="group relative my-4 overflow-hidden rounded-[var(--wise-radius-lg)]"
+      style={{ border: "1px solid var(--wise-border)" }}
+    >
+      {/* macOS-style chrome */}
+      <div
+        className="flex items-center gap-2 px-4 py-2.5"
+        style={{ backgroundColor: "var(--wise-code-bg)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}
+      >
+        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: "#ff5f56" }} />
+        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: "#ffbd2e" }} />
+        <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: "#27c93f" }} />
+        {filename && (
+          <span
+            className="ml-2 min-w-0 truncate font-mono text-[11px]"
+            style={{ color: "var(--wise-mute)" }}
+          >
+            {filename}
+          </span>
+        )}
+        <span
+          className="ml-auto shrink-0 font-mono text-[10px] uppercase tracking-wider"
+          style={{ color: "var(--wise-code-text-muted)" }}
+        >
+          {language}
+        </span>
+      </div>
+
       {/* Code */}
-      <div className="relative bg-[#0d1117] p-5 overflow-x-auto">
-        <pre className="text-[13px] text-[#e6edf3] font-mono leading-relaxed whitespace-pre">
+      <div className="relative overflow-x-auto p-5" style={{ backgroundColor: "var(--wise-code-bg)" }}>
+        <pre
+          className="wise-scroll font-mono text-[13px] leading-relaxed whitespace-pre"
+          style={{ color: "var(--wise-primary)" }}
+        >
           <code>{code}</code>
         </pre>
         {/* Copy button */}
         <button
           onClick={handleCopy}
-          className="absolute top-3 right-3 p-1.5 rounded-lg bg-white/5 border border-white/10 text-[color:var(--color-text-muted)] hover:text-white hover:bg-white/10 transition-all opacity-0 group-hover:opacity-100"
+          className="absolute top-3 right-3 p-1.5 rounded-[var(--wise-radius-sm)] opacity-0 transition-all group-hover:opacity-100"
+          style={{
+            backgroundColor: "rgba(159,232,112,0.12)",
+            border: "1px solid var(--wise-border)",
+            color: copied ? "var(--wise-positive)" : "var(--wise-code-text-muted)",
+          }}
           title="Copy to clipboard"
         >
-          {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+          {copied ? <Check size={13} /> : <Copy size={13} />}
         </button>
       </div>
     </div>

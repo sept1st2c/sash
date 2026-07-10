@@ -56,9 +56,9 @@ export default function WebhookEditor({ projectId, currentUrl }: Props) {
       {!editing ? (
         <div className="flex items-center gap-2.5">
           <div
-            className={`flex-1 font-mono text-[13px] bg-[color:var(--color-bg-subtle)] px-3.5 py-2.5 rounded-xl border border-[color:var(--color-border-subtle)] overflow-hidden text-ellipsis whitespace-nowrap ${url ? 'text-[color:var(--color-brand-light)]' : 'text-[color:var(--color-text-muted)]'}`}
+            className={`flex-1 min-w-0 font-mono text-[13px] bg-[color:var(--wise-canvas)] px-3.5 py-2.5 rounded-[var(--wise-radius-md)] border border-[color:var(--wise-border)] overflow-hidden text-ellipsis whitespace-nowrap ${url ? 'text-[color:var(--wise-primary)]' : 'text-[color:var(--wise-mute)]'}`}
           >
-            {url || "No webhook URL configured"}
+            {url || "No webhook URL set yet"}
           </div>
           {url && (
             <a
@@ -66,19 +66,19 @@ export default function WebhookEditor({ projectId, currentUrl }: Props) {
               target="_blank"
               rel="noopener noreferrer"
               title="Open URL"
-              className="shrink-0 p-2.5 rounded-xl border border-[color:var(--color-border-subtle)] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-bg-subtle)] hover:text-[color:var(--color-text-primary)] transition-colors"
+              className="shrink-0 p-2.5 rounded-[var(--wise-radius-md)] border border-[color:var(--wise-border)] text-[color:var(--wise-body)] hover:bg-[color:var(--wise-surface-alt)] hover:text-[color:var(--wise-ink)] transition-colors"
             >
               <ExternalLink size={16} />
             </a>
           )}
           <button
             onClick={() => { setEditing(true); setDraft(url); }}
-            className="shrink-0 flex items-center gap-2 px-3 py-2.5 rounded-xl border border-[color:var(--color-border-subtle)] text-[13px] font-medium text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-bg-subtle)] hover:text-[color:var(--color-text-primary)] transition-colors"
+            className="shrink-0 flex items-center gap-2 px-3 py-2.5 rounded-[var(--wise-radius-md)] border border-[color:var(--wise-border)] text-[13px] font-medium text-[color:var(--wise-body)] hover:bg-[color:var(--wise-surface-alt)] hover:text-[color:var(--wise-ink)] transition-colors"
           >
             <Pencil size={14} /> Edit
           </button>
           {success && (
-            <span className="text-[13px] text-emerald-500 flex items-center gap-1.5 ml-1">
+            <span className="text-[13px] text-[color:var(--wise-positive)] flex items-center gap-1.5 ml-1">
               <Check size={14} /> Saved
             </span>
           )}
@@ -88,7 +88,7 @@ export default function WebhookEditor({ projectId, currentUrl }: Props) {
           <div className="flex items-center gap-2.5">
             <input
               type="url"
-              className="flex-1 px-3.5 py-2.5 bg-[color:var(--color-bg-subtle)] border border-[color:var(--color-border-subtle)] rounded-xl text-[14px] text-[color:var(--color-text-primary)] transition-all focus:outline-none focus:border-[color:var(--color-brand)] focus:ring-4 focus:ring-brand/20 placeholder:text-[color:var(--color-text-muted)]"
+              className="flex-1 min-w-0 px-3.5 py-2.5 bg-[color:var(--wise-canvas)] border border-[color:var(--wise-border)] rounded-[var(--wise-radius-md)] text-[14px] text-[color:var(--wise-ink)] transition-all focus:outline-none focus:border-[color:var(--wise-primary)] focus:ring-4 focus:ring-[rgba(159,232,112,0.2)] placeholder:text-[color:var(--wise-mute)]"
               placeholder="https://yourapp.com/api/webhooks/sash"
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
@@ -97,24 +97,24 @@ export default function WebhookEditor({ projectId, currentUrl }: Props) {
             <button
               onClick={handleSave}
               disabled={loading}
-              className="shrink-0 flex items-center gap-2 px-4 py-2.5 bg-[color:var(--color-brand)] text-white rounded-xl text-[14px] font-medium hover:bg-[color:var(--color-brand-light)] transition-colors disabled:opacity-50"
+              className="shrink-0 flex items-center gap-2 px-4 py-2.5 bg-[color:var(--wise-primary)] text-[color:var(--wise-on-primary)] rounded-[var(--wise-radius-md)] text-[14px] font-semibold hover:bg-[color:var(--wise-primary-active)] transition-colors disabled:opacity-50"
             >
               <Check size={14} /> {loading ? "Saving…" : "Save"}
             </button>
             <button
               onClick={handleCancel}
               disabled={loading}
-              className="shrink-0 p-2.5 rounded-xl border border-[color:var(--color-border-subtle)] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-bg-subtle)] hover:text-[color:var(--color-text-primary)] transition-colors disabled:opacity-50"
+              className="shrink-0 p-2.5 rounded-[var(--wise-radius-md)] border border-[color:var(--wise-border)] text-[color:var(--wise-body)] hover:bg-[color:var(--wise-surface-alt)] hover:text-[color:var(--wise-ink)] transition-colors disabled:opacity-50"
             >
               <X size={16} />
             </button>
           </div>
           {error && (
-            <p className="text-[13px] text-red-500">{error}</p>
+            <p className="text-[13px] text-[color:var(--wise-negative)]">{error}</p>
           )}
-          <p className="text-[12px] text-[color:var(--color-text-muted)]">
-            Sash will send <code className="font-mono text-[11px] bg-[color:var(--color-bg-subtle)] px-1 py-0.5 rounded">X-Sash-Signature</code> HMAC headers with each request.
-            Leave empty to disable.
+          <p className="text-[12px] text-[color:var(--wise-mute)]">
+            Sash signs every request with an <code className="font-mono text-[11px] bg-[color:var(--wise-canvas)] px-1 py-0.5 rounded text-[color:var(--wise-primary)]">X-Sash-Signature</code> header.
+            Leave this empty to turn webhooks off.
           </p>
         </div>
       )}
